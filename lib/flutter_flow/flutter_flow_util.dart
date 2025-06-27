@@ -413,7 +413,7 @@ extension MapFilterExtensions<T> on Map<String, T?> {
 
 extension MapListContainsExt on List<dynamic> {
   bool containsMap(dynamic map) => map is Map
-      ? any((e) => e is Map && const DeepCollectionEquality().equals(e, map))
+      ? any((e) => e is Map && DeepCollectionEquality().equals(e, map))
       : contains(map);
 }
 
