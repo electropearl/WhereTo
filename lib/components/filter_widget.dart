@@ -197,7 +197,10 @@ class _FilterWidgetState extends State<FilterWidget> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '5 miles',
+                                '${valueOrDefault<String>(
+                                  _model.sliderValue?.toString(),
+                                  '5',
+                                )} Miles',
                                 style: FlutterFlowTheme.of(context)
                                     .bodyMedium
                                     .override(

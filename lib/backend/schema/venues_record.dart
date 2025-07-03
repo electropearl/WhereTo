@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 
 import '/backend/schema/util/firestore_util.dart';
-import '/backend/schema/util/schema_util.dart';
 
 import 'index.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -86,6 +85,36 @@ class VenuesRecord extends FirestoreRecord {
   List<String> get weekdayText => _weekdayText ?? const [];
   bool hasWeekdayText() => _weekdayText != null;
 
+  // "joinedVenueAt" field.
+  DateTime? _joinedVenueAt;
+  DateTime? get joinedVenueAt => _joinedVenueAt;
+  bool hasJoinedVenueAt() => _joinedVenueAt != null;
+
+  // "groupsHereNow" field.
+  List<DocumentReference>? _groupsHereNow;
+  List<DocumentReference> get groupsHereNow => _groupsHereNow ?? const [];
+  bool hasGroupsHereNow() => _groupsHereNow != null;
+
+  // "place_id" field.
+  String? _placeId;
+  String get placeId => _placeId ?? '';
+  bool hasPlaceId() => _placeId != null;
+
+  // "phone" field.
+  String? _phone;
+  String get phone => _phone ?? '';
+  bool hasPhone() => _phone != null;
+
+  // "website" field.
+  String? _website;
+  String get website => _website ?? '';
+  bool hasWebsite() => _website != null;
+
+  // "createdAt" field.
+  DateTime? _createdAt;
+  DateTime? get createdAt => _createdAt;
+  bool hasCreatedAt() => _createdAt != null;
+
   void _initializeFields() {
     _name = snapshotData['name'] as String?;
     _address = snapshotData['address'] as String?;
@@ -101,6 +130,12 @@ class VenuesRecord extends FirestoreRecord {
     _usersHereNow = getDataList(snapshotData['usersHereNow']);
     _trending = snapshotData['trending'] as bool?;
     _weekdayText = getDataList(snapshotData['weekday_text']);
+    _joinedVenueAt = snapshotData['joinedVenueAt'] as DateTime?;
+    _groupsHereNow = getDataList(snapshotData['groupsHereNow']);
+    _placeId = snapshotData['place_id'] as String?;
+    _phone = snapshotData['phone'] as String?;
+    _website = snapshotData['website'] as String?;
+    _createdAt = snapshotData['createdAt'] as DateTime?;
   }
 
   static CollectionReference get collection =>
@@ -148,6 +183,11 @@ Map<String, dynamic> createVenuesRecordData({
   double? boostRadius,
   DateTime? promotionExpiresAt,
   bool? trending,
+  DateTime? joinedVenueAt,
+  String? placeId,
+  String? phone,
+  String? website,
+  DateTime? createdAt,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -162,6 +202,11 @@ Map<String, dynamic> createVenuesRecordData({
       'boostRadius': boostRadius,
       'promotionExpiresAt': promotionExpiresAt,
       'trending': trending,
+      'joinedVenueAt': joinedVenueAt,
+      'place_id': placeId,
+      'phone': phone,
+      'website': website,
+      'createdAt': createdAt,
     }.withoutNulls,
   );
 
@@ -187,7 +232,13 @@ class VenuesRecordDocumentEquality implements Equality<VenuesRecord> {
         e1?.promotionExpiresAt == e2?.promotionExpiresAt &&
         listEquality.equals(e1?.usersHereNow, e2?.usersHereNow) &&
         e1?.trending == e2?.trending &&
-        listEquality.equals(e1?.weekdayText, e2?.weekdayText);
+        listEquality.equals(e1?.weekdayText, e2?.weekdayText) &&
+        e1?.joinedVenueAt == e2?.joinedVenueAt &&
+        listEquality.equals(e1?.groupsHereNow, e2?.groupsHereNow) &&
+        e1?.placeId == e2?.placeId &&
+        e1?.phone == e2?.phone &&
+        e1?.website == e2?.website &&
+        e1?.createdAt == e2?.createdAt;
   }
 
   @override
@@ -205,7 +256,13 @@ class VenuesRecordDocumentEquality implements Equality<VenuesRecord> {
         e?.promotionExpiresAt,
         e?.usersHereNow,
         e?.trending,
-        e?.weekdayText
+        e?.weekdayText,
+        e?.joinedVenueAt,
+        e?.groupsHereNow,
+        e?.placeId,
+        e?.phone,
+        e?.website,
+        e?.createdAt
       ]);
 
   @override

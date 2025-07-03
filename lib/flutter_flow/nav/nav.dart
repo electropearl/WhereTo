@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '/backend/backend.dart';
 
 import '/auth/base_auth_user_provider.dart';
 
@@ -96,11 +97,19 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
             name: MatchModeWidget.routeName,
             path: MatchModeWidget.routePath,
+            asyncParams: {
+              'matchSession': getDoc(['matches'], MatchesRecord.fromSnapshot),
+            },
             builder: (context, params) => params.isEmpty
                 ? NavBarPage(initialPage: 'MatchMode')
                 : NavBarPage(
                     initialPage: 'MatchMode',
-                    page: MatchModeWidget(),
+                    page: MatchModeWidget(
+                      matchSession: params.getParam(
+                        'matchSession',
+                        ParamType.Document,
+                      ),
+                    ),
                   )),
         FFRoute(
             name: ProfileWidget.routeName,
@@ -198,6 +207,96 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: ProfilePersonalizeWidget.routeName,
           path: ProfilePersonalizeWidget.routePath,
           builder: (context, params) => ProfilePersonalizeWidget(),
+        ),
+        FFRoute(
+          name: AddFriendWidget.routeName,
+          path: AddFriendWidget.routePath,
+          builder: (context, params) => AddFriendWidget(),
+        ),
+        FFRoute(
+          name: MatchFoundWidget.routeName,
+          path: MatchFoundWidget.routePath,
+          asyncParams: {
+            'userRef': getDoc(['users'], UsersRecord.fromSnapshot),
+            'venueRef': getDoc(['venues'], VenuesRecord.fromSnapshot),
+          },
+          builder: (context, params) => MatchFoundWidget(
+            userRef: params.getParam(
+              'userRef',
+              ParamType.Document,
+            ),
+            venueRef: params.getParam(
+              'venueRef',
+              ParamType.Document,
+            ),
+          ),
+        ),
+        FFRoute(
+            name: MatchesWidget.routeName,
+            path: MatchesWidget.routePath,
+            builder: (context, params) => params.isEmpty
+                ? NavBarPage(initialPage: 'matches')
+                : NavBarPage(
+                    initialPage: 'matches',
+                    page: MatchesWidget(),
+                  )),
+        FFRoute(
+          name: MatchesPendingWidget.routeName,
+          path: MatchesPendingWidget.routePath,
+          builder: (context, params) => MatchesPendingWidget(),
+        ),
+        FFRoute(
+          name: MatchesAcceptedWidget.routeName,
+          path: MatchesAcceptedWidget.routePath,
+          builder: (context, params) => MatchesAcceptedWidget(),
+        ),
+        FFRoute(
+          name: MatchesDeniedWidget.routeName,
+          path: MatchesDeniedWidget.routePath,
+          builder: (context, params) => MatchesDeniedWidget(),
+        ),
+        FFRoute(
+          name: SeekingWidget.routeName,
+          path: SeekingWidget.routePath,
+          builder: (context, params) => SeekingWidget(),
+        ),
+        FFRoute(
+          name: GroupInviteWidget.routeName,
+          path: GroupInviteWidget.routePath,
+          builder: (context, params) => GroupInviteWidget(),
+        ),
+        FFRoute(
+          name: VerifyPageWidget.routeName,
+          path: VerifyPageWidget.routePath,
+          asyncParams: {
+            'venueRef': getDoc(['venues'], VenuesRecord.fromSnapshot),
+          },
+          builder: (context, params) => VerifyPageWidget(
+            venueRef: params.getParam(
+              'venueRef',
+              ParamType.Document,
+            ),
+          ),
+        ),
+        FFRoute(
+          name: SuccessWidget.routeName,
+          path: SuccessWidget.routePath,
+          builder: (context, params) => SuccessWidget(),
+        ),
+        FFRoute(
+          name: SupportWidget.routeName,
+          path: SupportWidget.routePath,
+          builder: (context, params) => SupportWidget(),
+        ),
+        FFRoute(
+          name: TermsAndConditionsWidget.routeName,
+          path: TermsAndConditionsWidget.routePath,
+          builder: (context, params) => TermsAndConditionsWidget(),
+        ),
+        FFRoute(
+          name: PrivacyPolicyWidget.routeName,
+          path: PrivacyPolicyWidget.routePath,
+          builder: (context, params) => PrivacyPolicyWidget(),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
@@ -317,6 +416,7 @@ class FFParameters {
     ParamType type, {
     bool isList = false,
     List<String>? collectionNamePath,
+    StructBuilder<T>? structBuilder,
   }) {
     if (futureParamValues.containsKey(paramName)) {
       return futureParamValues[paramName];
@@ -335,6 +435,7 @@ class FFParameters {
       type,
       isList,
       collectionNamePath: collectionNamePath,
+      structBuilder: structBuilder,
     );
   }
 }
@@ -385,7 +486,7 @@ class FFRoute {
               ? Container(
                   color: Colors.transparent,
                   child: Image.asset(
-                    'assets/images/ChatGPT_Image_Jun_19,_2025,_05_16_41_PM.png',
+                    'assets/images/transparent_where_to_variant_1.png',
                     fit: BoxFit.contain,
                   ),
                 )

@@ -1,4 +1,5 @@
 import '/flutter_flow/flutter_flow_util.dart';
+import '/index.dart';
 import 'venue_widget.dart' show VenueWidget;
 import 'package:flutter/material.dart';
 

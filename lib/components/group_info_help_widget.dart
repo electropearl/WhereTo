@@ -67,7 +67,7 @@ class _GroupInfoHelpWidgetState extends State<GroupInfoHelpWidget> {
           color: Colors.transparent,
         ),
         child: Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(24.0, 24.0, 24.0, 24.0),
+          padding: EdgeInsets.all(5.0),
           child: Container(
             decoration: BoxDecoration(
               color: FlutterFlowTheme.of(context).secondaryBackground,

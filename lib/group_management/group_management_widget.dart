@@ -86,6 +86,7 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
               isEqualTo: 'new',
             ),
       );
+      _model.groupsQuery = await queryGroupsRecordOnce();
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -284,8 +285,12 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                            columnGroupsRecord
-                                                                .groupName,
+                                                            valueOrDefault<
+                                                                String>(
+                                                              columnGroupsRecord
+                                                                  .groupName,
+                                                              'NA',
+                                                            ),
                                                             style: FlutterFlowTheme
                                                                     .of(context)
                                                                 .titleMedium
@@ -323,7 +328,7 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                               valueOrDefault<
                                                                   String>(
                                                                 columnGroupsRecord
-                                                                    .dynamic,
+                                                                    .dynamicSingleWord,
                                                                 'Friends',
                                                               ),
                                                               style: FlutterFlowTheme
@@ -726,8 +731,8 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                             queryParameters: {
                                                               'groupDetails':
                                                                   serializeParam(
-                                                                columnGroupsRecord
-                                                                    .reference,
+                                                                currentUserDocument
+                                                                    ?.currentGroup,
                                                                 ParamType
                                                                     .DocumentReference,
                                                               ),
@@ -958,17 +963,39 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                     Padding(
                                       padding: EdgeInsetsDirectional.fromSTEB(
                                           0.0, 0.0, 10.0, 0.0),
-                                      child: badges.Badge(
-                                        badgeContent: Text(
-                                          valueOrDefault<String>(
-                                            _model.newInvites?.length
-                                                .toString(),
-                                            '0',
-                                          ),
-                                          style: FlutterFlowTheme.of(context)
-                                              .titleSmall
-                                              .override(
-                                                font: GoogleFonts.interTight(
+                                      child: InkWell(
+                                        splashColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        hoverColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          context.pushNamed(
+                                              GroupInviteWidget.routeName);
+                                        },
+                                        child: badges.Badge(
+                                          badgeContent: Text(
+                                            valueOrDefault<String>(
+                                              _model.newInvites?.length
+                                                  .toString(),
+                                              '0',
+                                            ),
+                                            style: FlutterFlowTheme.of(context)
+                                                .titleSmall
+                                                .override(
+                                                  font: GoogleFonts.interTight(
+                                                    fontWeight:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .titleSmall
+                                                            .fontWeight,
+                                                    fontStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .titleSmall
+                                                            .fontStyle,
+                                                  ),
+                                                  color: Colors.white,
+                                                  letterSpacing: 0.0,
                                                   fontWeight:
                                                       FlutterFlowTheme.of(
                                                               context)
@@ -980,38 +1007,32 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                           .titleSmall
                                                           .fontStyle,
                                                 ),
-                                                color: Colors.white,
-                                                letterSpacing: 0.0,
-                                                fontWeight:
-                                                    FlutterFlowTheme.of(context)
-                                                        .titleSmall
-                                                        .fontWeight,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .titleSmall
-                                                        .fontStyle,
-                                              ),
-                                        ),
-                                        showBadge: true,
-                                        shape: badges.BadgeShape.circle,
-                                        badgeColor: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        elevation: 4.0,
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            8.0, 8.0, 8.0, 8.0),
-                                        position: badges.BadgePosition.topEnd(),
-                                        animationType:
-                                            badges.BadgeAnimationType.scale,
-                                        toAnimate: true,
-                                        child: Padding(
+                                          ),
+                                          showBadge: true,
+                                          shape: badges.BadgeShape.circle,
+                                          badgeColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .primary,
+                                          elevation: 4.0,
                                           padding:
                                               EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 12.0, 12.0, 12.0),
-                                          child: Icon(
-                                            Icons.mail,
-                                            color: FlutterFlowTheme.of(context)
-                                                .primaryText,
-                                            size: 24.0,
+                                                  8.0, 8.0, 8.0, 8.0),
+                                          position:
+                                              badges.BadgePosition.topEnd(),
+                                          animationType:
+                                              badges.BadgeAnimationType.scale,
+                                          toAnimate: true,
+                                          child: Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    0.0, 12.0, 12.0, 12.0),
+                                            child: Icon(
+                                              Icons.mail,
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                              size: 24.0,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -1028,32 +1049,31 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                     AuthUserStreamWidget(
                                       builder: (context) => Builder(
                                         builder: (context) {
-                                          final otherGroups =
-                                              (currentUserDocument?.groupIds
-                                                          .toList() ??
-                                                      [])
-                                                  .where((e) =>
+                                          final groups = _model.groupsQuery
+                                                  ?.where((e) =>
+                                                      e.reference !=
                                                       currentUserDocument
-                                                          ?.currentGroup !=
-                                                      e)
-                                                  .toList();
+                                                          ?.currentGroup)
+                                                  .toList()
+                                                  .toList() ??
+                                              [];
 
                                           return ListView.separated(
                                             padding: EdgeInsets.zero,
                                             shrinkWrap: true,
                                             scrollDirection: Axis.vertical,
-                                            itemCount: otherGroups.length,
+                                            itemCount: groups.length,
                                             separatorBuilder: (_, __) =>
                                                 SizedBox(height: 10.0),
                                             itemBuilder:
-                                                (context, otherGroupsIndex) {
-                                              final otherGroupsItem =
-                                                  otherGroups[otherGroupsIndex];
+                                                (context, groupsIndex) {
+                                              final groupsItem =
+                                                  groups[groupsIndex];
                                               return StreamBuilder<
                                                   GroupsRecord>(
                                                 stream:
                                                     GroupsRecord.getDocument(
-                                                        otherGroupsItem),
+                                                        groupsItem.reference),
                                                 builder: (context, snapshot) {
                                                   // Customize what your widget looks like when it's loading.
                                                   if (!snapshot.hasData) {
@@ -1113,8 +1133,12 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                                           .start,
                                                                   children: [
                                                                     Text(
-                                                                      containerGroupsRecord
-                                                                          .groupName,
+                                                                      valueOrDefault<
+                                                                          String>(
+                                                                        containerGroupsRecord
+                                                                            .groupName,
+                                                                        'NA',
+                                                                      ),
                                                                       style: FlutterFlowTheme.of(
                                                                               context)
                                                                           .titleMedium
@@ -1143,7 +1167,7 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                                         valueOrDefault<
                                                                             String>(
                                                                           containerGroupsRecord
-                                                                              .dynamic,
+                                                                              .dynamicSingleWord,
                                                                           'Friends',
                                                                         ),
                                                                         style: FlutterFlowTheme.of(context)
@@ -1393,7 +1417,7 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                                           {
                                                                         'groupDetails':
                                                                             serializeParam(
-                                                                          containerGroupsRecord
+                                                                          groupsItem
                                                                               .reference,
                                                                           ParamType
                                                                               .DocumentReference,

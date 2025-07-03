@@ -1,10 +1,13 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/custom_code/actions/index.dart' as actions;
 import '/index.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'profile_model.dart';
@@ -269,65 +272,360 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                           mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (valueOrDefault<bool>(
-                                currentUserDocument?.owner, false))
-                              Align(
-                                alignment: AlignmentDirectional(0.0, 0.0),
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 8.0, 0.0, 0.0),
-                                  child: AuthUserStreamWidget(
-                                    builder: (context) => InkWell(
-                                      splashColor: Colors.transparent,
-                                      focusColor: Colors.transparent,
-                                      hoverColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: () async {
-                                        context
-                                            .pushNamed(OwnerWidget.routeName);
-                                      },
-                                      child: Container(
-                                        height: 28.0,
-                                        decoration: BoxDecoration(
-                                          color: FlutterFlowTheme.of(context)
-                                              .secondary,
-                                          borderRadius:
-                                              BorderRadius.circular(14.0),
-                                        ),
-                                        child: Align(
-                                          alignment:
-                                              AlignmentDirectional(0.0, 0.0),
-                                          child: Text(
-                                            'Owner Page',
-                                            style: FlutterFlowTheme.of(context)
-                                                .labelMedium
-                                                .override(
-                                                  font: GoogleFonts.inter(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .labelMedium
-                                                            .fontStyle,
-                                                  ),
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
+                            Align(
+                              alignment: AlignmentDirectional(0.0, 0.0),
+                              child: Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 8.0, 0.0, 0.0),
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    context.pushNamed(OwnerWidget.routeName);
+                                  },
+                                  child: Container(
+                                    height: 28.0,
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondary,
+                                      borderRadius: BorderRadius.circular(14.0),
+                                    ),
+                                    child: Align(
+                                      alignment: AlignmentDirectional(0.0, 0.0),
+                                      child: Text(
+                                        'Owner Page',
+                                        style: FlutterFlowTheme.of(context)
+                                            .labelMedium
+                                            .override(
+                                              font: GoogleFonts.inter(
+                                                fontWeight: FontWeight.w600,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMedium
+                                                        .fontStyle,
+                                              ),
+                                              color:
+                                                  FlutterFlowTheme.of(context)
                                                       .primaryText,
-                                                  letterSpacing: 0.0,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .labelMedium
-                                                          .fontStyle,
-                                                ),
-                                          ),
-                                        ),
+                                              letterSpacing: 0.0,
+                                              fontWeight: FontWeight.w600,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .labelMedium
+                                                      .fontStyle,
+                                            ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
+                            ),
+                            Align(
+                              alignment: AlignmentDirectional(0.0, 0.0),
+                              child: Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 8.0, 0.0, 0.0),
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    _model.apiResult24db2 =
+                                        await FetchVenuesCall.call(
+                                      location: '29.4241,-98.4936',
+                                      radius: 50000,
+                                    );
+
+                                    _model.current = 0;
+                                    safeSetState(() {});
+                                    if (FetchVenuesCall.results(
+                                              (_model.apiResult24db2
+                                                      ?.jsonBody ??
+                                                  ''),
+                                            ) !=
+                                            null &&
+                                        (FetchVenuesCall.results(
+                                          (_model.apiResult24db2?.jsonBody ??
+                                              ''),
+                                        ))!
+                                            .isNotEmpty) {
+                                      while (_model.current! <
+                                          FetchVenuesCall.results(
+                                            (_model.apiResult24db2?.jsonBody ??
+                                                ''),
+                                          )!
+                                              .length) {
+                                        _model.currentItem =
+                                            FetchVenuesCall.results(
+                                          (_model.apiResult24db2?.jsonBody ??
+                                              ''),
+                                        )?.elementAtOrNull(_model.current!);
+                                        safeSetState(() {});
+                                        _model.apiResultxki22 =
+                                            await FetchPlaceDetailsCall.call(
+                                          placeId: getJsonField(
+                                            _model.currentItem,
+                                            r'''$.place_id''',
+                                          ).toString(),
+                                        );
+
+                                        _model.docExist2 =
+                                            await queryVenuesRecordOnce(
+                                          queryBuilder: (venuesRecord) =>
+                                              venuesRecord.where(
+                                            'place_id',
+                                            isEqualTo: getJsonField(
+                                              _model.currentItem,
+                                              r'''$.place_id''',
+                                            ).toString(),
+                                          ),
+                                          singleRecord: true,
+                                        ).then((s) => s.firstOrNull);
+                                        if ((_model.docExist2 != null) ==
+                                            true) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Location Exist',
+                                                style: TextStyle(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryText,
+                                                ),
+                                              ),
+                                              duration:
+                                                  Duration(milliseconds: 4000),
+                                              backgroundColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondary,
+                                            ),
+                                          );
+                                        } else {
+                                          _model.locationLatLng =
+                                              await actions.convertToGeoPoint(
+                                            getJsonField(
+                                              _model.currentItem,
+                                              r'''$.geometry.location.lat''',
+                                            ).toString(),
+                                            getJsonField(
+                                              _model.currentItem,
+                                              r'''$.geometry.location.lng''',
+                                            ).toString(),
+                                          );
+
+                                          var venuesRecordReference =
+                                              VenuesRecord.collection
+                                                  .doc(getJsonField(
+                                            _model.currentItem,
+                                            r'''$.place_id''',
+                                          ).toString());
+                                          await venuesRecordReference.set({
+                                            ...createVenuesRecordData(
+                                              name: getJsonField(
+                                                _model.currentItem,
+                                                r'''$.name''',
+                                              ).toString(),
+                                              address:
+                                                  FetchPlaceDetailsCall.address(
+                                                (_model.apiResultxki22
+                                                        ?.jsonBody ??
+                                                    ''),
+                                              ),
+                                              location: _model.locationLatLng,
+                                              photoUrl:
+                                                  'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${getJsonField(
+                                                _model.currentItem,
+                                                r'''$.photos[0].photo_reference''',
+                                              ).toString()}&key=AIzaSyCmChbqubBkmA0O_ikMHT0yH5i_Jx_LnlU',
+                                              isClaimed: false,
+                                              placeId: getJsonField(
+                                                _model.currentItem,
+                                                r'''$.place_id''',
+                                              ).toString(),
+                                              phone:
+                                                  FetchPlaceDetailsCall.phone(
+                                                (_model.apiResultxki22
+                                                        ?.jsonBody ??
+                                                    ''),
+                                              ),
+                                              website:
+                                                  FetchPlaceDetailsCall.website(
+                                                (_model.apiResultxki22
+                                                        ?.jsonBody ??
+                                                    ''),
+                                              ),
+                                              promoted: false,
+                                            ),
+                                            ...mapToFirestore(
+                                              {
+                                                'createdAt': FieldValue
+                                                    .serverTimestamp(),
+                                                'weekday_text':
+                                                    FetchPlaceDetailsCall
+                                                        .weekdaytext(
+                                                  (_model.apiResultxki22
+                                                          ?.jsonBody ??
+                                                      ''),
+                                                ),
+                                                'types': (getJsonField(
+                                                  _model.currentItem,
+                                                  r'''$.types[0]''',
+                                                  true,
+                                                ) as List)
+                                                    .map<String>(
+                                                        (s) => s.toString())
+                                                    .toList(),
+                                              },
+                                            ),
+                                          });
+                                          _model.documentID =
+                                              VenuesRecord.getDocumentFromData({
+                                            ...createVenuesRecordData(
+                                              name: getJsonField(
+                                                _model.currentItem,
+                                                r'''$.name''',
+                                              ).toString(),
+                                              address:
+                                                  FetchPlaceDetailsCall.address(
+                                                (_model.apiResultxki22
+                                                        ?.jsonBody ??
+                                                    ''),
+                                              ),
+                                              location: _model.locationLatLng,
+                                              photoUrl:
+                                                  'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${getJsonField(
+                                                _model.currentItem,
+                                                r'''$.photos[0].photo_reference''',
+                                              ).toString()}&key=AIzaSyCmChbqubBkmA0O_ikMHT0yH5i_Jx_LnlU',
+                                              isClaimed: false,
+                                              placeId: getJsonField(
+                                                _model.currentItem,
+                                                r'''$.place_id''',
+                                              ).toString(),
+                                              phone:
+                                                  FetchPlaceDetailsCall.phone(
+                                                (_model.apiResultxki22
+                                                        ?.jsonBody ??
+                                                    ''),
+                                              ),
+                                              website:
+                                                  FetchPlaceDetailsCall.website(
+                                                (_model.apiResultxki22
+                                                        ?.jsonBody ??
+                                                    ''),
+                                              ),
+                                              promoted: false,
+                                            ),
+                                            ...mapToFirestore(
+                                              {
+                                                'createdAt': DateTime.now(),
+                                                'weekday_text':
+                                                    FetchPlaceDetailsCall
+                                                        .weekdaytext(
+                                                  (_model.apiResultxki22
+                                                          ?.jsonBody ??
+                                                      ''),
+                                                ),
+                                                'types': (getJsonField(
+                                                  _model.currentItem,
+                                                  r'''$.types[0]''',
+                                                  true,
+                                                ) as List)
+                                                    .map<String>(
+                                                        (s) => s.toString())
+                                                    .toList(),
+                                              },
+                                            ),
+                                          }, venuesRecordReference);
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                '${_model.current?.toString()} has been added',
+                                                style: TextStyle(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryText,
+                                                ),
+                                              ),
+                                              duration:
+                                                  Duration(milliseconds: 4000),
+                                              backgroundColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .success,
+                                            ),
+                                          );
+                                        }
+
+                                        _model.current = _model.current! + 1;
+                                        safeSetState(() {});
+                                      }
+                                      FFAppState().showFullList = true;
+                                      FFAppState().update(() {});
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Failed to run API',
+                                            style: TextStyle(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                            ),
+                                          ),
+                                          duration:
+                                              Duration(milliseconds: 4000),
+                                          backgroundColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .secondary,
+                                        ),
+                                      );
+                                    }
+
+                                    safeSetState(() {});
+                                  },
+                                  child: Container(
+                                    height: 28.0,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          FlutterFlowTheme.of(context).primary,
+                                      borderRadius: BorderRadius.circular(14.0),
+                                    ),
+                                    child: Align(
+                                      alignment: AlignmentDirectional(0.0, 0.0),
+                                      child: Text(
+                                        'add locations',
+                                        style: FlutterFlowTheme.of(context)
+                                            .labelMedium
+                                            .override(
+                                              font: GoogleFonts.inter(
+                                                fontWeight: FontWeight.w600,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMedium
+                                                        .fontStyle,
+                                              ),
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                              letterSpacing: 0.0,
+                                              fontWeight: FontWeight.w600,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .labelMedium
+                                                      .fontStyle,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                             Column(
                               mainAxisSize: MainAxisSize.max,
                               crossAxisAlignment: CrossAxisAlignment.start,

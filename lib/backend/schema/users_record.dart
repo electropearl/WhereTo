@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 
 import '/backend/schema/util/firestore_util.dart';
-import '/backend/schema/util/schema_util.dart';
 
 import 'index.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -86,11 +85,6 @@ class UsersRecord extends FirestoreRecord {
   String get friendTypeLabel => _friendTypeLabel ?? '';
   bool hasFriendTypeLabel() => _friendTypeLabel != null;
 
-  // "subscription" field.
-  bool? _subscription;
-  bool get subscription => _subscription ?? false;
-  bool hasSubscription() => _subscription != null;
-
   // "groupId" field.
   DocumentReference? _groupId;
   DocumentReference? get groupId => _groupId;
@@ -137,6 +131,87 @@ class UsersRecord extends FirestoreRecord {
   DocumentReference? get currentGroup => _currentGroup;
   bool hasCurrentGroup() => _currentGroup != null;
 
+  // "geoLocation" field.
+  LatLng? _geoLocation;
+  LatLng? get geoLocation => _geoLocation;
+  bool hasGeoLocation() => _geoLocation != null;
+
+  // "isInGroup" field.
+  bool? _isInGroup;
+  bool get isInGroup => _isInGroup ?? false;
+  bool hasIsInGroup() => _isInGroup != null;
+
+  // "seekingType" field.
+  List<String>? _seekingType;
+  List<String> get seekingType => _seekingType ?? const [];
+  bool hasSeekingType() => _seekingType != null;
+
+  // "currentVenue" field.
+  DocumentReference? _currentVenue;
+  DocumentReference? get currentVenue => _currentVenue;
+  bool hasCurrentVenue() => _currentVenue != null;
+
+  // "lastMatchAttemptAt" field.
+  DateTime? _lastMatchAttemptAt;
+  DateTime? get lastMatchAttemptAt => _lastMatchAttemptAt;
+  bool hasLastMatchAttemptAt() => _lastMatchAttemptAt != null;
+
+  // "numOfFailedMatches" field.
+  int? _numOfFailedMatches;
+  int get numOfFailedMatches => _numOfFailedMatches ?? 0;
+  bool hasNumOfFailedMatches() => _numOfFailedMatches != null;
+
+  // "currentVenueId" field.
+  DocumentReference? _currentVenueId;
+  DocumentReference? get currentVenueId => _currentVenueId;
+  bool hasCurrentVenueId() => _currentVenueId != null;
+
+  // "matchCooldownUntil" field.
+  DateTime? _matchCooldownUntil;
+  DateTime? get matchCooldownUntil => _matchCooldownUntil;
+  bool hasMatchCooldownUntil() => _matchCooldownUntil != null;
+
+  // "gender" field.
+  String? _gender;
+  String get gender => _gender ?? '';
+  bool hasGender() => _gender != null;
+
+  // "couple" field.
+  bool? _couple;
+  bool get couple => _couple ?? false;
+  bool hasCouple() => _couple != null;
+
+  // "coupleUserRef" field.
+  DocumentReference? _coupleUserRef;
+  DocumentReference? get coupleUserRef => _coupleUserRef;
+  bool hasCoupleUserRef() => _coupleUserRef != null;
+
+  // "isSubscribed" field.
+  bool? _isSubscribed;
+  bool get isSubscribed => _isSubscribed ?? false;
+  bool hasIsSubscribed() => _isSubscribed != null;
+
+  // "matchedUserIds" field.
+  List<DocumentReference>? _matchedUserIds;
+  List<DocumentReference> get matchedUserIds => _matchedUserIds ?? const [];
+  bool hasMatchedUserIds() => _matchedUserIds != null;
+
+  // "arrivedAt" field.
+  DateTime? _arrivedAt;
+  DateTime? get arrivedAt => _arrivedAt;
+  bool hasArrivedAt() => _arrivedAt != null;
+
+  // "profileVerificationInfo" field.
+  StoreOwnerInformationStruct? _profileVerificationInfo;
+  StoreOwnerInformationStruct get profileVerificationInfo =>
+      _profileVerificationInfo ?? StoreOwnerInformationStruct();
+  bool hasProfileVerificationInfo() => _profileVerificationInfo != null;
+
+  // "admin" field.
+  bool? _admin;
+  bool get admin => _admin ?? false;
+  bool hasAdmin() => _admin != null;
+
   void _initializeFields() {
     _email = snapshotData['email'] as String?;
     _displayName = snapshotData['display_name'] as String?;
@@ -152,7 +227,6 @@ class UsersRecord extends FirestoreRecord {
     _openToMatch = snapshotData['openToMatch'] as bool?;
     _visibleOnMap = snapshotData['visibleOnMap'] as bool?;
     _friendTypeLabel = snapshotData['friendTypeLabel'] as String?;
-    _subscription = snapshotData['subscription'] as bool?;
     _groupId = snapshotData['groupId'] as DocumentReference?;
     _groupIds = getDataList(snapshotData['groupIds']);
     _radiusSaved = castToType<double>(snapshotData['radiusSaved']);
@@ -162,6 +236,26 @@ class UsersRecord extends FirestoreRecord {
     _owner = snapshotData['owner'] as bool?;
     _birthday = snapshotData['birthday'] as DateTime?;
     _currentGroup = snapshotData['currentGroup'] as DocumentReference?;
+    _geoLocation = snapshotData['geoLocation'] as LatLng?;
+    _isInGroup = snapshotData['isInGroup'] as bool?;
+    _seekingType = getDataList(snapshotData['seekingType']);
+    _currentVenue = snapshotData['currentVenue'] as DocumentReference?;
+    _lastMatchAttemptAt = snapshotData['lastMatchAttemptAt'] as DateTime?;
+    _numOfFailedMatches = castToType<int>(snapshotData['numOfFailedMatches']);
+    _currentVenueId = snapshotData['currentVenueId'] as DocumentReference?;
+    _matchCooldownUntil = snapshotData['matchCooldownUntil'] as DateTime?;
+    _gender = snapshotData['gender'] as String?;
+    _couple = snapshotData['couple'] as bool?;
+    _coupleUserRef = snapshotData['coupleUserRef'] as DocumentReference?;
+    _isSubscribed = snapshotData['isSubscribed'] as bool?;
+    _matchedUserIds = getDataList(snapshotData['matchedUserIds']);
+    _arrivedAt = snapshotData['arrivedAt'] as DateTime?;
+    _profileVerificationInfo =
+        snapshotData['profileVerificationInfo'] is StoreOwnerInformationStruct
+            ? snapshotData['profileVerificationInfo']
+            : StoreOwnerInformationStruct.maybeFromMap(
+                snapshotData['profileVerificationInfo']);
+    _admin = snapshotData['admin'] as bool?;
   }
 
   static CollectionReference get collection =>
@@ -210,12 +304,25 @@ Map<String, dynamic> createUsersRecordData({
   bool? openToMatch,
   bool? visibleOnMap,
   String? friendTypeLabel,
-  bool? subscription,
   DocumentReference? groupId,
   double? radiusSaved,
   bool? owner,
   DateTime? birthday,
   DocumentReference? currentGroup,
+  LatLng? geoLocation,
+  bool? isInGroup,
+  DocumentReference? currentVenue,
+  DateTime? lastMatchAttemptAt,
+  int? numOfFailedMatches,
+  DocumentReference? currentVenueId,
+  DateTime? matchCooldownUntil,
+  String? gender,
+  bool? couple,
+  DocumentReference? coupleUserRef,
+  bool? isSubscribed,
+  DateTime? arrivedAt,
+  StoreOwnerInformationStruct? profileVerificationInfo,
+  bool? admin,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -231,14 +338,31 @@ Map<String, dynamic> createUsersRecordData({
       'openToMatch': openToMatch,
       'visibleOnMap': visibleOnMap,
       'friendTypeLabel': friendTypeLabel,
-      'subscription': subscription,
       'groupId': groupId,
       'radiusSaved': radiusSaved,
       'owner': owner,
       'birthday': birthday,
       'currentGroup': currentGroup,
+      'geoLocation': geoLocation,
+      'isInGroup': isInGroup,
+      'currentVenue': currentVenue,
+      'lastMatchAttemptAt': lastMatchAttemptAt,
+      'numOfFailedMatches': numOfFailedMatches,
+      'currentVenueId': currentVenueId,
+      'matchCooldownUntil': matchCooldownUntil,
+      'gender': gender,
+      'couple': couple,
+      'coupleUserRef': coupleUserRef,
+      'isSubscribed': isSubscribed,
+      'arrivedAt': arrivedAt,
+      'profileVerificationInfo': StoreOwnerInformationStruct().toMap(),
+      'admin': admin,
     }.withoutNulls,
   );
+
+  // Handle nested data for "profileVerificationInfo" field.
+  addStoreOwnerInformationStructData(
+      firestoreData, profileVerificationInfo, 'profileVerificationInfo');
 
   return firestoreData;
 }
@@ -263,7 +387,6 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e1?.openToMatch == e2?.openToMatch &&
         e1?.visibleOnMap == e2?.visibleOnMap &&
         e1?.friendTypeLabel == e2?.friendTypeLabel &&
-        e1?.subscription == e2?.subscription &&
         e1?.groupId == e2?.groupId &&
         listEquality.equals(e1?.groupIds, e2?.groupIds) &&
         e1?.radiusSaved == e2?.radiusSaved &&
@@ -272,7 +395,23 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         listEquality.equals(e1?.venueFilter, e2?.venueFilter) &&
         e1?.owner == e2?.owner &&
         e1?.birthday == e2?.birthday &&
-        e1?.currentGroup == e2?.currentGroup;
+        e1?.currentGroup == e2?.currentGroup &&
+        e1?.geoLocation == e2?.geoLocation &&
+        e1?.isInGroup == e2?.isInGroup &&
+        listEquality.equals(e1?.seekingType, e2?.seekingType) &&
+        e1?.currentVenue == e2?.currentVenue &&
+        e1?.lastMatchAttemptAt == e2?.lastMatchAttemptAt &&
+        e1?.numOfFailedMatches == e2?.numOfFailedMatches &&
+        e1?.currentVenueId == e2?.currentVenueId &&
+        e1?.matchCooldownUntil == e2?.matchCooldownUntil &&
+        e1?.gender == e2?.gender &&
+        e1?.couple == e2?.couple &&
+        e1?.coupleUserRef == e2?.coupleUserRef &&
+        e1?.isSubscribed == e2?.isSubscribed &&
+        listEquality.equals(e1?.matchedUserIds, e2?.matchedUserIds) &&
+        e1?.arrivedAt == e2?.arrivedAt &&
+        e1?.profileVerificationInfo == e2?.profileVerificationInfo &&
+        e1?.admin == e2?.admin;
   }
 
   @override
@@ -291,7 +430,6 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e?.openToMatch,
         e?.visibleOnMap,
         e?.friendTypeLabel,
-        e?.subscription,
         e?.groupId,
         e?.groupIds,
         e?.radiusSaved,
@@ -300,7 +438,23 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e?.venueFilter,
         e?.owner,
         e?.birthday,
-        e?.currentGroup
+        e?.currentGroup,
+        e?.geoLocation,
+        e?.isInGroup,
+        e?.seekingType,
+        e?.currentVenue,
+        e?.lastMatchAttemptAt,
+        e?.numOfFailedMatches,
+        e?.currentVenueId,
+        e?.matchCooldownUntil,
+        e?.gender,
+        e?.couple,
+        e?.coupleUserRef,
+        e?.isSubscribed,
+        e?.matchedUserIds,
+        e?.arrivedAt,
+        e?.profileVerificationInfo,
+        e?.admin
       ]);
 
   @override

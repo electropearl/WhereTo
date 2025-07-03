@@ -20,3 +20,18 @@ export '/location_permission/location_permission_widget.dart'
     show LocationPermissionWidget;
 export '/profile_personalize/profile_personalize_widget.dart'
     show ProfilePersonalizeWidget;
+export '/add_friend/add_friend_widget.dart' show AddFriendWidget;
+export '/match_found/match_found_widget.dart' show MatchFoundWidget;
+export '/matches/matches_widget.dart' show MatchesWidget;
+export '/matches_pending/matches_pending_widget.dart' show MatchesPendingWidget;
+export '/matches_accepted/matches_accepted_widget.dart'
+    show MatchesAcceptedWidget;
+export '/matches_denied/matches_denied_widget.dart' show MatchesDeniedWidget;
+export '/seeking/seeking_widget.dart' show SeekingWidget;
+export '/group_invite/group_invite_widget.dart' show GroupInviteWidget;
+export '/verify_page/verify_page_widget.dart' show VerifyPageWidget;
+export '/success/success_widget.dart' show SuccessWidget;
+export '/support/support_widget.dart' show SupportWidget;
+export '/terms_and_conditions/terms_and_conditions_widget.dart'
+    show TermsAndConditionsWidget;
+export '/privacy_policy/privacy_policy_widget.dart' show PrivacyPolicyWidget;

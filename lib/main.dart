@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
 
     _appStateNotifier = AppStateNotifier.instance;
     _router = createRouter(_appStateNotifier);
-    userStream = whereToFirebaseUserStream()
+    userStream = hereNowFirebaseUserStream()
       ..listen((user) {
         _appStateNotifier.update(user);
       });
@@ -102,7 +102,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Where To',
+      title: 'Here Now',
       scrollBehavior: MyAppScrollBehavior(),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
@@ -157,8 +157,9 @@ class _NavBarPageState extends State<NavBarPage> {
     final tabs = {
       'Home': HomeWidget(),
       'MatchMode': MatchModeWidget(),
-      'groupManagement': GroupManagementWidget(),
       'profile': ProfileWidget(),
+      'groupManagement': GroupManagementWidget(),
+      'matches': MatchesWidget(),
     };
     final currentIndex = tabs.keys.toList().indexOf(_currentPageName);
 
@@ -202,6 +203,17 @@ class _NavBarPageState extends State<NavBarPage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
+              Icons.person,
+            ),
+            activeIcon: Icon(
+              Icons.person,
+              size: 35.0,
+            ),
+            label: 'Profile',
+            tooltip: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
               Icons.celebration,
             ),
             activeIcon: Icon(
@@ -213,13 +225,9 @@ class _NavBarPageState extends State<NavBarPage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.person,
+              Icons.favorite,
             ),
-            activeIcon: Icon(
-              Icons.person,
-              size: 35.0,
-            ),
-            label: 'Profile',
+            label: '',
             tooltip: '',
           )
         ],

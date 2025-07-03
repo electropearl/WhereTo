@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 
 import '/backend/schema/util/firestore_util.dart';
-import '/backend/schema/util/schema_util.dart';
 
 import 'index.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -66,15 +65,25 @@ class GroupsRecord extends FirestoreRecord {
   String get groupName => _groupName ?? '';
   bool hasGroupName() => _groupName != null;
 
-  // "Dynamic" field.
-  String? _dynamic;
-  String get dynamic => _dynamic ?? '';
-  bool hasDynamic() => _dynamic != null;
-
   // "venue" field.
   DocumentReference? _venue;
   DocumentReference? get venue => _venue;
   bool hasVenue() => _venue != null;
+
+  // "DynamicSingleWord" field.
+  String? _dynamicSingleWord;
+  String get dynamicSingleWord => _dynamicSingleWord ?? '';
+  bool hasDynamicSingleWord() => _dynamicSingleWord != null;
+
+  // "seekingType" field.
+  List<String>? _seekingType;
+  List<String> get seekingType => _seekingType ?? const [];
+  bool hasSeekingType() => _seekingType != null;
+
+  // "interests" field.
+  List<String>? _interests;
+  List<String> get interests => _interests ?? const [];
+  bool hasInterests() => _interests != null;
 
   void _initializeFields() {
     _groupId = snapshotData['groupId'] as String?;
@@ -87,8 +96,10 @@ class GroupsRecord extends FirestoreRecord {
     _groupVibe = getDataList(snapshotData['groupVibe']);
     _groupOwner = snapshotData['groupOwner'] as DocumentReference?;
     _groupName = snapshotData['groupName'] as String?;
-    _dynamic = snapshotData['Dynamic'] as String?;
     _venue = snapshotData['venue'] as DocumentReference?;
+    _dynamicSingleWord = snapshotData['DynamicSingleWord'] as String?;
+    _seekingType = getDataList(snapshotData['seekingType']);
+    _interests = getDataList(snapshotData['interests']);
   }
 
   static CollectionReference get collection =>
@@ -132,8 +143,8 @@ Map<String, dynamic> createGroupsRecordData({
   DateTime? createdAt,
   DocumentReference? groupOwner,
   String? groupName,
-  String? dynamic,
   DocumentReference? venue,
+  String? dynamicSingleWord,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -144,8 +155,8 @@ Map<String, dynamic> createGroupsRecordData({
       'createdAt': createdAt,
       'groupOwner': groupOwner,
       'groupName': groupName,
-      'Dynamic': dynamic,
       'venue': venue,
+      'DynamicSingleWord': dynamicSingleWord,
     }.withoutNulls,
   );
 
@@ -168,8 +179,10 @@ class GroupsRecordDocumentEquality implements Equality<GroupsRecord> {
         listEquality.equals(e1?.groupVibe, e2?.groupVibe) &&
         e1?.groupOwner == e2?.groupOwner &&
         e1?.groupName == e2?.groupName &&
-        e1?.dynamic == e2?.dynamic &&
-        e1?.venue == e2?.venue;
+        e1?.venue == e2?.venue &&
+        e1?.dynamicSingleWord == e2?.dynamicSingleWord &&
+        listEquality.equals(e1?.seekingType, e2?.seekingType) &&
+        listEquality.equals(e1?.interests, e2?.interests);
   }
 
   @override
@@ -184,8 +197,10 @@ class GroupsRecordDocumentEquality implements Equality<GroupsRecord> {
         e?.groupVibe,
         e?.groupOwner,
         e?.groupName,
-        e?.dynamic,
-        e?.venue
+        e?.venue,
+        e?.dynamicSingleWord,
+        e?.seekingType,
+        e?.interests
       ]);
 
   @override

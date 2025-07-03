@@ -314,7 +314,7 @@ class _InterestSelectionWidgetState extends State<InterestSelectionWidget> {
                             ),
                           });
 
-                          context.pushNamed(LocationPermissionWidget.routeName);
+                          context.pushNamed(SeekingWidget.routeName);
                         },
                         text: 'Save & Continue',
                         options: FFButtonOptions(

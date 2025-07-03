@@ -5,8 +5,8 @@ import '../base_auth_user_provider.dart';
 
 export '../base_auth_user_provider.dart';
 
-class WhereToFirebaseUser extends BaseAuthUser {
-  WhereToFirebaseUser(this.user);
+class HereNowFirebaseUser extends BaseAuthUser {
+  HereNowFirebaseUser(this.user);
   User? user;
   bool get loggedIn => user != null;
 
@@ -58,17 +58,17 @@ class WhereToFirebaseUser extends BaseAuthUser {
 
   static BaseAuthUser fromUserCredential(UserCredential userCredential) =>
       fromFirebaseUser(userCredential.user);
-  static BaseAuthUser fromFirebaseUser(User? user) => WhereToFirebaseUser(user);
+  static BaseAuthUser fromFirebaseUser(User? user) => HereNowFirebaseUser(user);
 }
 
-Stream<BaseAuthUser> whereToFirebaseUserStream() => FirebaseAuth.instance
+Stream<BaseAuthUser> hereNowFirebaseUserStream() => FirebaseAuth.instance
         .authStateChanges()
         .debounce((user) => user == null && !loggedIn
             ? TimerStream(true, const Duration(seconds: 1))
             : Stream.value(user))
         .map<BaseAuthUser>(
       (user) {
-        currentUser = WhereToFirebaseUser(user);
+        currentUser = HereNowFirebaseUser(user);
         return currentUser!;
       },
     );

@@ -1,13 +1,58 @@
 const axios = require("axios").default;
 const qs = require("qs");
 
+async function _fetchVenuesCall(context, ffVariables) {
+  var location = ffVariables["location"];
+  var radius = ffVariables["radius"];
+
+  var url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`;
+  var headers = {};
+  var params = {
+    location: location,
+    radius: radius,
+    type: `bar`,
+    keyword: `live music`,
+    key: `AIzaSyCmChbqubBkmA0O_ikMHT0yH5i_Jx_LnlU`,
+  };
+  var ffApiRequestBody = undefined;
+
+  return makeApiRequest({
+    method: "get",
+    url,
+    headers,
+    params,
+    returnBody: true,
+    isStreamingApi: false,
+  });
+}
+async function _fetchPlaceDetailsCall(context, ffVariables) {
+  var placeId = ffVariables["placeId"];
+
+  var url = `https://maps.googleapis.com/maps/api/place/details/json?&fields=name,formatted_address,formatted_phone_number,website,opening_hours,rating,user_ratings_total,photo,business_status&key=AIzaSyCmChbqubBkmA0O_ikMHT0yH5i_Jx_LnlU`;
+  var headers = {};
+  var params = { place_id: placeId };
+  var ffApiRequestBody = undefined;
+
+  return makeApiRequest({
+    method: "get",
+    url,
+    headers,
+    params,
+    returnBody: true,
+    isStreamingApi: false,
+  });
+}
+
 /// Helper functions to route to the appropriate API Call.
 
 async function makeApiCall(context, data) {
   var callName = data["callName"] || "";
   var variables = data["variables"] || {};
 
-  const callMap = {};
+  const callMap = {
+    FetchVenuesCall: _fetchVenuesCall,
+    FetchPlaceDetailsCall: _fetchPlaceDetailsCall,
+  };
 
   if (!(callName in callMap)) {
     return {

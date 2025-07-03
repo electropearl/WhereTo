@@ -50,6 +50,66 @@ class MatchesRecord extends FirestoreRecord {
   String get status => _status ?? '';
   bool hasStatus() => _status != null;
 
+  // "userALoc" field.
+  LatLng? _userALoc;
+  LatLng? get userALoc => _userALoc;
+  bool hasUserALoc() => _userALoc != null;
+
+  // "userBLoc" field.
+  LatLng? _userBLoc;
+  LatLng? get userBLoc => _userBLoc;
+  bool hasUserBLoc() => _userBLoc != null;
+
+  // "userAStatus" field.
+  bool? _userAStatus;
+  bool get userAStatus => _userAStatus ?? false;
+  bool hasUserAStatus() => _userAStatus != null;
+
+  // "userBStatus" field.
+  bool? _userBStatus;
+  bool get userBStatus => _userBStatus ?? false;
+  bool hasUserBStatus() => _userBStatus != null;
+
+  // "groupAId" field.
+  DocumentReference? _groupAId;
+  DocumentReference? get groupAId => _groupAId;
+  bool hasGroupAId() => _groupAId != null;
+
+  // "groupBId" field.
+  DocumentReference? _groupBId;
+  DocumentReference? get groupBId => _groupBId;
+  bool hasGroupBId() => _groupBId != null;
+
+  // "priorityGivenTo" field.
+  String? _priorityGivenTo;
+  String get priorityGivenTo => _priorityGivenTo ?? '';
+  bool hasPriorityGivenTo() => _priorityGivenTo != null;
+
+  // "userAName" field.
+  String? _userAName;
+  String get userAName => _userAName ?? '';
+  bool hasUserAName() => _userAName != null;
+
+  // "userBName" field.
+  String? _userBName;
+  String get userBName => _userBName ?? '';
+  bool hasUserBName() => _userBName != null;
+
+  // "groupAName" field.
+  String? _groupAName;
+  String get groupAName => _groupAName ?? '';
+  bool hasGroupAName() => _groupAName != null;
+
+  // "groupBName" field.
+  String? _groupBName;
+  String get groupBName => _groupBName ?? '';
+  bool hasGroupBName() => _groupBName != null;
+
+  // "matchStrength" field.
+  double? _matchStrength;
+  double get matchStrength => _matchStrength ?? 0.0;
+  bool hasMatchStrength() => _matchStrength != null;
+
   void _initializeFields() {
     _userAId = snapshotData['userAId'] as DocumentReference?;
     _userBId = snapshotData['userBId'] as DocumentReference?;
@@ -58,6 +118,18 @@ class MatchesRecord extends FirestoreRecord {
     _compassStarted = snapshotData['compassStarted'] as bool?;
     _lastSafetyPingAt = snapshotData['lastSafetyPingAt'] as DateTime?;
     _status = snapshotData['status'] as String?;
+    _userALoc = snapshotData['userALoc'] as LatLng?;
+    _userBLoc = snapshotData['userBLoc'] as LatLng?;
+    _userAStatus = snapshotData['userAStatus'] as bool?;
+    _userBStatus = snapshotData['userBStatus'] as bool?;
+    _groupAId = snapshotData['groupAId'] as DocumentReference?;
+    _groupBId = snapshotData['groupBId'] as DocumentReference?;
+    _priorityGivenTo = snapshotData['priorityGivenTo'] as String?;
+    _userAName = snapshotData['userAName'] as String?;
+    _userBName = snapshotData['userBName'] as String?;
+    _groupAName = snapshotData['groupAName'] as String?;
+    _groupBName = snapshotData['groupBName'] as String?;
+    _matchStrength = castToType<double>(snapshotData['matchStrength']);
   }
 
   static CollectionReference get collection =>
@@ -102,6 +174,18 @@ Map<String, dynamic> createMatchesRecordData({
   bool? compassStarted,
   DateTime? lastSafetyPingAt,
   String? status,
+  LatLng? userALoc,
+  LatLng? userBLoc,
+  bool? userAStatus,
+  bool? userBStatus,
+  DocumentReference? groupAId,
+  DocumentReference? groupBId,
+  String? priorityGivenTo,
+  String? userAName,
+  String? userBName,
+  String? groupAName,
+  String? groupBName,
+  double? matchStrength,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -112,6 +196,18 @@ Map<String, dynamic> createMatchesRecordData({
       'compassStarted': compassStarted,
       'lastSafetyPingAt': lastSafetyPingAt,
       'status': status,
+      'userALoc': userALoc,
+      'userBLoc': userBLoc,
+      'userAStatus': userAStatus,
+      'userBStatus': userBStatus,
+      'groupAId': groupAId,
+      'groupBId': groupBId,
+      'priorityGivenTo': priorityGivenTo,
+      'userAName': userAName,
+      'userBName': userBName,
+      'groupAName': groupAName,
+      'groupBName': groupBName,
+      'matchStrength': matchStrength,
     }.withoutNulls,
   );
 
@@ -129,7 +225,19 @@ class MatchesRecordDocumentEquality implements Equality<MatchesRecord> {
         e1?.venueId == e2?.venueId &&
         e1?.compassStarted == e2?.compassStarted &&
         e1?.lastSafetyPingAt == e2?.lastSafetyPingAt &&
-        e1?.status == e2?.status;
+        e1?.status == e2?.status &&
+        e1?.userALoc == e2?.userALoc &&
+        e1?.userBLoc == e2?.userBLoc &&
+        e1?.userAStatus == e2?.userAStatus &&
+        e1?.userBStatus == e2?.userBStatus &&
+        e1?.groupAId == e2?.groupAId &&
+        e1?.groupBId == e2?.groupBId &&
+        e1?.priorityGivenTo == e2?.priorityGivenTo &&
+        e1?.userAName == e2?.userAName &&
+        e1?.userBName == e2?.userBName &&
+        e1?.groupAName == e2?.groupAName &&
+        e1?.groupBName == e2?.groupBName &&
+        e1?.matchStrength == e2?.matchStrength;
   }
 
   @override
@@ -140,7 +248,19 @@ class MatchesRecordDocumentEquality implements Equality<MatchesRecord> {
         e?.venueId,
         e?.compassStarted,
         e?.lastSafetyPingAt,
-        e?.status
+        e?.status,
+        e?.userALoc,
+        e?.userBLoc,
+        e?.userAStatus,
+        e?.userBStatus,
+        e?.groupAId,
+        e?.groupBId,
+        e?.priorityGivenTo,
+        e?.userAName,
+        e?.userBName,
+        e?.groupAName,
+        e?.groupBName,
+        e?.matchStrength
       ]);
 
   @override

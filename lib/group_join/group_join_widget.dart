@@ -1058,7 +1058,11 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
                                 ),
                               }, groupsRecordReference);
                               for (int loop1Index = 0;
-                                  loop1Index <= widget.friendsExisting!.length;
+                                  loop1Index <=
+                                      valueOrDefault<int>(
+                                        _model.friendsInvited.length,
+                                        1,
+                                      );
                                   loop1Index++) {
                                 final currentLoop1Item =
                                     _model.friends![loop1Index];
@@ -1087,6 +1091,11 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
                                   },
                                 ),
                               });
+
+                              await currentUserReference!
+                                  .update(createUsersRecordData(
+                                currentGroup: _model.group?.reference,
+                              ));
 
                               context.goNamed(
                                 GroupWidget.routeName,

@@ -9,6 +9,8 @@ class GroupManagementModel extends FlutterFlowModel<GroupManagementWidget> {
 
   // Stores action output result for [Firestore Query - Query a collection] action in groupManagement widget.
   List<GroupInvitesRecord>? newInvites;
+  // Stores action output result for [Firestore Query - Query a collection] action in groupManagement widget.
+  List<GroupsRecord>? groupsQuery;
   // Stores action output result for [Bottom Sheet - inviteFriend] action in Container widget.
   List<DocumentReference>? friendsAdded;
 

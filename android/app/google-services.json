@@ -7,6 +7,50 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:186117342620:android:0ff7e08a59acc6d47a7459",
+        "android_client_info": {
+          "package_name": "com.mycompany.herenow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "186117342620-9qpqcai85juma9knghirgnghn5crjaig.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.herenow",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "186117342620-q1djprvt3n2gm2k89hoko54iuuki4rr2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAasmquOztCyyvMV3VkBZe0kG2lNqFyKgg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "186117342620-q1djprvt3n2gm2k89hoko54iuuki4rr2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "186117342620-r34rtph6p9t7c0ofnrqksdliamahskik.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.whereto"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:186117342620:android:5806ceb3e17d2bd87a7459",
         "android_client_info": {
           "package_name": "com.mycompany.whereto"

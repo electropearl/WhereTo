@@ -1,4 +1,4 @@
-package com.mycompany.whereto
+package com.mycompany.herenow
 
 import io.flutter.embedding.android.FlutterActivity
 

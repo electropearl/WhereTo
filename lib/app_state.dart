@@ -55,6 +55,11 @@ class FFAppState extends ChangeNotifier {
     _safeInit(() {
       _vibeFilter = prefs.getStringList('ff_vibeFilter') ?? _vibeFilter;
     });
+    _safeInit(() {
+      _matches =
+          prefs.getStringList('ff_matches')?.map((path) => path.ref).toList() ??
+              _matches;
+    });
   }
 
   void update(VoidCallback callback) {
@@ -297,6 +302,41 @@ class FFAppState extends ChangeNotifier {
   void insertAtIndexInVibeFilter(int index, String value) {
     vibeFilter.insert(index, value);
     prefs.setStringList('ff_vibeFilter', _vibeFilter);
+  }
+
+  List<DocumentReference> _matches = [];
+  List<DocumentReference> get matches => _matches;
+  set matches(List<DocumentReference> value) {
+    _matches = value;
+    prefs.setStringList('ff_matches', value.map((x) => x.path).toList());
+  }
+
+  void addToMatches(DocumentReference value) {
+    matches.add(value);
+    prefs.setStringList('ff_matches', _matches.map((x) => x.path).toList());
+  }
+
+  void removeFromMatches(DocumentReference value) {
+    matches.remove(value);
+    prefs.setStringList('ff_matches', _matches.map((x) => x.path).toList());
+  }
+
+  void removeAtIndexFromMatches(int index) {
+    matches.removeAt(index);
+    prefs.setStringList('ff_matches', _matches.map((x) => x.path).toList());
+  }
+
+  void updateMatchesAtIndex(
+    int index,
+    DocumentReference Function(DocumentReference) updateFn,
+  ) {
+    matches[index] = updateFn(_matches[index]);
+    prefs.setStringList('ff_matches', _matches.map((x) => x.path).toList());
+  }
+
+  void insertAtIndexInMatches(int index, DocumentReference value) {
+    matches.insert(index, value);
+    prefs.setStringList('ff_matches', _matches.map((x) => x.path).toList());
   }
 }
 
