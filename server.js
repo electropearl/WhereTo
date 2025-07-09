@@ -1,47 +1,66 @@
 const WebSocket = require('ws');
-const PORT = process.env.PORT || 8080;
 
-const wss = new WebSocket.Server({ port: PORT });
-const users = new Map();
-const matches = new Map();
+const wss = new WebSocket.Server({ port: 10000 });
 
-wss.on('connection', function connection(ws) {
-  ws.on('message', function incoming(message) {
+const clients = {}; // userId => socket
+const matches = {}; // matchId => [userId1, userId2]
+
+console.log("WebSocket server running on ws://localhost:10000");
+
+wss.on('connection', (ws) => {
+  let userId = null;
+
+  ws.on('message', (message) => {
     try {
       const data = JSON.parse(message);
 
-      if (data.type === 'register') {
-        users.set(data.userId, ws);
-        ws.userId = data.userId;
-      }
+      switch (data.type) {
+        case 'register':
+          userId = data.userId;
+          clients[userId] = ws;
+          console.log(`User ${userId} registered`);
+          break;
 
-      if (data.type === 'init_match') {
-        matches.set(data.matchId, data.userIds);
-      }
+        case 'init_match':
+          const { matchId, userIds } = data;
+          matches[matchId] = userIds;
+          console.log(`Match ${matchId} initialized between ${userIds.join(' & ')}`);
+          break;
 
-      if (data.type === 'location') {
-        const matchUsers = matches.get(data.matchId);
-        if (matchUsers) {
-          matchUsers.forEach((uid) => {
-            if (uid !== data.userId && users.get(uid)) {
-              users.get(uid).send(JSON.stringify({
-                type: 'location',
-                lat: data.lat,
-                lng: data.lng,
-                from: data.userId
-              }));
-            }
-          });
-        }
+        case 'location':
+          const senderId = data.userId;
+          const matchId2 = data.matchId;
+          const lat = data.lat;
+          const lng = data.lng;
+
+          const peers = matches[matchId2];
+          if (!peers || peers.length !== 2) return;
+
+          const otherUserId = peers.find((id) => id !== senderId);
+          const otherSocket = clients[otherUserId];
+
+          if (otherSocket && otherSocket.readyState === WebSocket.OPEN) {
+            otherSocket.send(JSON.stringify({
+              type: 'location',
+              lat,
+              lng,
+              from: senderId,
+            }));
+          }
+          break;
+
+        default:
+          console.log("Unknown message type", data);
       }
     } catch (err) {
-      console.error('Invalid message:', message);
+      console.error("Error handling message:", err);
     }
   });
 
-  ws.on('close', function () {
-    users.delete(ws.userId);
+  ws.on('close', () => {
+    if (userId && clients[userId]) {
+      delete clients[userId];
+      console.log(`User ${userId} disconnected`);
+    }
   });
 });
-
-console.log(`WebSocket server running on port ${PORT}`);
