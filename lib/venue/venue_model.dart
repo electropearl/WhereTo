@@ -37,12 +37,10 @@ class VenueModel extends FlutterFlowModel<VenueWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  // Stores action output result for [Firestore Query - Query a collection] action in venue widget.
-  VenuesRecord? venueDetail;
   // Stores action output result for [Firestore Query - Query a collection] action in Button widget.
   InterestedDailyRecord? interstedUsers;
   // Stores action output result for [Firestore Query - Query a collection] action in Button widget.
-  InterestedDailyRecord? interstedUsers2;
+  List<InterestedDailyRecord>? interstedUsers2;
   // Stores action output result for [Firestore Query - Query a collection] action in Button widget.
   InterestedDailyRecord? interestRef2;
   // Stores action output result for [Firestore Query - Query a collection] action in Button widget.
@@ -55,4 +53,10 @@ class VenueModel extends FlutterFlowModel<VenueWidget> {
 
   @override
   void dispose() {}
+
+  /// Action blocks.
+  Future animatebutton(BuildContext context) async {
+    logFirebaseEvent('animatebutton_update_page_state');
+    pageRebuild = 'load';
+  }
 }

@@ -135,12 +135,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: VenueWidget.routeName,
           path: VenueWidget.routePath,
+          asyncParams: {
+            'venueRef': getDoc(['venues'], VenuesRecord.fromSnapshot),
+          },
           builder: (context, params) => VenueWidget(
             venueRef: params.getParam(
               'venueRef',
-              ParamType.DocumentReference,
-              isList: false,
-              collectionNamePath: ['venues'],
+              ParamType.Document,
             ),
           ),
         ),

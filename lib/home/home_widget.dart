@@ -4,7 +4,6 @@ import '/backend/backend.dart';
 import '/components/filter_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
-import '/flutter_flow/flutter_flow_toggle_icon.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'dart:ui';
 import '/custom_code/actions/index.dart' as actions;
@@ -846,12 +845,14 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                     queryParameters: {
                                                       'venueRef':
                                                           serializeParam(
-                                                        containerVenuesRecord
-                                                            .reference,
-                                                        ParamType
-                                                            .DocumentReference,
+                                                        containerVenuesRecord,
+                                                        ParamType.Document,
                                                       ),
                                                     }.withoutNulls,
+                                                    extra: <String, dynamic>{
+                                                      'venueRef':
+                                                          containerVenuesRecord,
+                                                    },
                                                   );
                                                 },
                                                 child: Container(
@@ -1287,21 +1288,12 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                           stream:
                                                               queryInterestedDailyRecord(
                                                             parent:
-                                                                containerVenuesRecord
-                                                                    .reference,
+                                                                venuesListItem,
                                                             queryBuilder:
                                                                 (interestedDailyRecord) =>
                                                                     interestedDailyRecord
-                                                                        .where(
-                                                                          'dateTime',
-                                                                          isGreaterThanOrEqualTo:
-                                                                              functions.startOfDay(getCurrentTimestamp),
-                                                                        )
-                                                                        .where(
-                                                                          'dateTime',
-                                                                          isLessThanOrEqualTo:
-                                                                              functions.endOfDay(functions.endOfDay(getCurrentTimestamp)),
-                                                                        ),
+                                                                        .orderBy(
+                                                                            'dateTime'),
                                                             singleRecord: true,
                                                           ),
                                                           builder: (context,
@@ -1384,11 +1376,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                               ),
                                                                               Padding(
                                                                                 padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 2.0),
-                                                                                child: Text(
-                                                                                  valueOrDefault<String>(
-                                                                                    columnInterestedDailyRecord?.totalGroupInterestToday.toString(),
-                                                                                    '0',
-                                                                                  ),
+                                                                                child: AnimatedDefaultTextStyle(
                                                                                   style: FlutterFlowTheme.of(context).bodySmall.override(
                                                                                         font: GoogleFonts.inter(
                                                                                           fontWeight: FontWeight.w600,
@@ -1400,6 +1388,14 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                                         fontWeight: FontWeight.w600,
                                                                                         fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
                                                                                       ),
+                                                                                  duration: Duration(milliseconds: 600),
+                                                                                  curve: Curves.easeIn,
+                                                                                  child: Text(
+                                                                                    valueOrDefault<String>(
+                                                                                      columnInterestedDailyRecord?.totalInterestToday.toString(),
+                                                                                      '0',
+                                                                                    ),
+                                                                                  ),
                                                                                 ),
                                                                               ),
                                                                             ].divide(SizedBox(width: 4.0)),
@@ -1430,99 +1426,6 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                               ),
                                                                         ),
                                                                       ),
-                                                                      ToggleIcon(
-                                                                        onPressed:
-                                                                            () async {
-                                                                          safeSetState(
-                                                                            () => FFAppState().interestedInGoing.contains(containerVenuesRecord.reference)
-                                                                                ? FFAppState().removeFromInterestedInGoing(containerVenuesRecord.reference)
-                                                                                : FFAppState().addToInterestedInGoing(containerVenuesRecord.reference),
-                                                                          );
-                                                                          logFirebaseEvent(
-                                                                              'HOME_PAGE_ToggleIcon_p6ra31vp_ON_TOGGLE');
-                                                                          if ((currentUserDocument?.interestedInGoing.toList() ?? [])
-                                                                              .contains(containerVenuesRecord.reference)) {
-                                                                            logFirebaseEvent('ToggleIcon_backend_call');
-
-                                                                            await currentUserReference!.update({
-                                                                              ...mapToFirestore(
-                                                                                {
-                                                                                  'interestedInGoing': FieldValue.arrayRemove([
-                                                                                    containerVenuesRecord.reference
-                                                                                  ]),
-                                                                                },
-                                                                              ),
-                                                                            });
-                                                                            logFirebaseEvent('ToggleIcon_backend_call');
-
-                                                                            await columnInterestedDailyRecord!.reference.update({
-                                                                              ...mapToFirestore(
-                                                                                {
-                                                                                  'totalInterestToday': FieldValue.increment(-(1)),
-                                                                                  'peopleList': FieldValue.arrayRemove([
-                                                                                    currentUserReference
-                                                                                  ]),
-                                                                                },
-                                                                              ),
-                                                                            });
-                                                                          } else {
-                                                                            logFirebaseEvent('ToggleIcon_backend_call');
-
-                                                                            await currentUserReference!.update({
-                                                                              ...mapToFirestore(
-                                                                                {
-                                                                                  'interestedInGoing': FieldValue.arrayUnion([
-                                                                                    containerVenuesRecord.reference
-                                                                                  ]),
-                                                                                },
-                                                                              ),
-                                                                            });
-                                                                            logFirebaseEvent('ToggleIcon_backend_call');
-
-                                                                            await columnInterestedDailyRecord!.reference.update({
-                                                                              ...mapToFirestore(
-                                                                                {
-                                                                                  'totalInterestToday': FieldValue.increment(1),
-                                                                                  'peopleList': FieldValue.arrayUnion([
-                                                                                    currentUserReference
-                                                                                  ]),
-                                                                                },
-                                                                              ),
-                                                                            });
-                                                                          }
-
-                                                                          logFirebaseEvent(
-                                                                              'ToggleIcon_update_app_state');
-                                                                          FFAppState()
-                                                                              .interestedInGoing = (currentUserDocument?.interestedInGoing.toList() ??
-                                                                                  [])
-                                                                              .toList()
-                                                                              .cast<DocumentReference>();
-                                                                          safeSetState(
-                                                                              () {});
-                                                                        },
-                                                                        value: FFAppState()
-                                                                            .interestedInGoing
-                                                                            .contains(containerVenuesRecord.reference),
-                                                                        onIcon:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .favorite_sharp,
-                                                                          color:
-                                                                              Color(0xFFEB8EF9),
-                                                                          size:
-                                                                              24.0,
-                                                                        ),
-                                                                        offIcon:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .favorite_border,
-                                                                          color:
-                                                                              FlutterFlowTheme.of(context).secondary,
-                                                                          size:
-                                                                              24.0,
-                                                                        ),
-                                                                      ),
                                                                     ],
                                                                   ),
                                                                 ),
@@ -1531,91 +1434,59 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                       MainAxisSize
                                                                           .max,
                                                                   children: [
-                                                                    StreamBuilder<
-                                                                        List<
-                                                                            InterestedDailyRecord>>(
-                                                                      stream:
-                                                                          queryInterestedDailyRecord(
-                                                                        parent:
-                                                                            containerVenuesRecord.reference,
-                                                                        singleRecord:
-                                                                            true,
+                                                                    Container(
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: Color(
+                                                                            0xE6FFFFFF),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(12.0),
                                                                       ),
-                                                                      builder:
-                                                                          (context,
-                                                                              snapshot) {
-                                                                        // Customize what your widget looks like when it's loading.
-                                                                        if (!snapshot
-                                                                            .hasData) {
-                                                                          return Center(
-                                                                            child:
-                                                                                SizedBox(
-                                                                              width: 50.0,
-                                                                              height: 50.0,
-                                                                              child: CircularProgressIndicator(
-                                                                                valueColor: AlwaysStoppedAnimation<Color>(
-                                                                                  FlutterFlowTheme.of(context).primary,
+                                                                      child:
+                                                                          Padding(
+                                                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                                                            8.0,
+                                                                            4.0,
+                                                                            8.0,
+                                                                            4.0),
+                                                                        child:
+                                                                            Row(
+                                                                          mainAxisSize:
+                                                                              MainAxisSize.max,
+                                                                          children:
+                                                                              [
+                                                                            FaIcon(
+                                                                              FontAwesomeIcons.fire,
+                                                                              color: FlutterFlowTheme.of(context).tertiary,
+                                                                              size: 16.0,
+                                                                            ),
+                                                                            Padding(
+                                                                              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 2.0),
+                                                                              child: AnimatedDefaultTextStyle(
+                                                                                style: FlutterFlowTheme.of(context).bodySmall.override(
+                                                                                      font: GoogleFonts.inter(
+                                                                                        fontWeight: FontWeight.w600,
+                                                                                        fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                                      ),
+                                                                                      color: Color(0xFF4B39EF),
+                                                                                      fontSize: 16.0,
+                                                                                      letterSpacing: 0.0,
+                                                                                      fontWeight: FontWeight.w600,
+                                                                                      fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                                    ),
+                                                                                duration: Duration(milliseconds: 600),
+                                                                                curve: Curves.easeIn,
+                                                                                child: Text(
+                                                                                  valueOrDefault<String>(
+                                                                                    columnInterestedDailyRecord?.totalGroupInterestToday.toString(),
+                                                                                    '0',
+                                                                                  ),
                                                                                 ),
                                                                               ),
                                                                             ),
-                                                                          );
-                                                                        }
-                                                                        List<InterestedDailyRecord>
-                                                                            containerInterestedDailyRecordList =
-                                                                            snapshot.data!;
-                                                                        final containerInterestedDailyRecord = containerInterestedDailyRecordList.isNotEmpty
-                                                                            ? containerInterestedDailyRecordList.first
-                                                                            : null;
-
-                                                                        return Container(
-                                                                          decoration:
-                                                                              BoxDecoration(
-                                                                            color:
-                                                                                Color(0xE6FFFFFF),
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(12.0),
-                                                                          ),
-                                                                          child:
-                                                                              Padding(
-                                                                            padding: EdgeInsetsDirectional.fromSTEB(
-                                                                                8.0,
-                                                                                4.0,
-                                                                                8.0,
-                                                                                4.0),
-                                                                            child:
-                                                                                Row(
-                                                                              mainAxisSize: MainAxisSize.max,
-                                                                              children: [
-                                                                                FaIcon(
-                                                                                  FontAwesomeIcons.fire,
-                                                                                  color: FlutterFlowTheme.of(context).tertiary,
-                                                                                  size: 16.0,
-                                                                                ),
-                                                                                Padding(
-                                                                                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 2.0),
-                                                                                  child: Text(
-                                                                                    valueOrDefault<String>(
-                                                                                      containerInterestedDailyRecord?.totalGroupInterestToday.toString(),
-                                                                                      '0',
-                                                                                    ),
-                                                                                    style: FlutterFlowTheme.of(context).bodySmall.override(
-                                                                                          font: GoogleFonts.inter(
-                                                                                            fontWeight: FontWeight.w600,
-                                                                                            fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
-                                                                                          ),
-                                                                                          color: Color(0xFF4B39EF),
-                                                                                          fontSize: 16.0,
-                                                                                          letterSpacing: 0.0,
-                                                                                          fontWeight: FontWeight.w600,
-                                                                                          fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
-                                                                                        ),
-                                                                                  ),
-                                                                                ),
-                                                                              ].divide(SizedBox(width: 4.0)),
-                                                                            ),
-                                                                          ),
-                                                                        );
-                                                                      },
+                                                                          ].divide(SizedBox(width: 4.0)),
+                                                                        ),
+                                                                      ),
                                                                     ),
                                                                     Padding(
                                                                       padding: EdgeInsetsDirectional.fromSTEB(

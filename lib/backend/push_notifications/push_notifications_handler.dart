@@ -123,7 +123,8 @@ final parametersBuilderMap =
   'GroupJoin': ParameterData.none(),
   'venue': (data) async => ParameterData(
         allParams: {
-          'venueRef': getParameter<DocumentReference>(data, 'venueRef'),
+          'venueRef': await getDocumentParameter<VenuesRecord>(
+              data, 'venueRef', VenuesRecord.fromSnapshot),
         },
       ),
   'owner': ParameterData.none(),
