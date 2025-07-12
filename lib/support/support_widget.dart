@@ -27,6 +27,7 @@ class _SupportWidgetState extends State<SupportWidget> {
     super.initState();
     _model = createModel(context, () => SupportModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'support'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -64,6 +65,8 @@ class _SupportWidgetState extends State<SupportWidget> {
                   size: 24.0,
                 ),
                 onPressed: () async {
+                  logFirebaseEvent('SUPPORT_arrow_back_rounded_ICN_ON_TAP');
+                  logFirebaseEvent('IconButton_navigate_back');
                   context.safePop();
                 },
               ),

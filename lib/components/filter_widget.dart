@@ -148,6 +148,9 @@ class _FilterWidgetState extends State<FilterWidget> {
                           size: 20.0,
                         ),
                         onPressed: () async {
+                          logFirebaseEvent(
+                              'FILTER_COMP_close_rounded_ICN_ON_TAP');
+                          logFirebaseEvent('IconButton_bottom_sheet');
                           Navigator.pop(context);
                         },
                       ),
@@ -198,7 +201,12 @@ class _FilterWidgetState extends State<FilterWidget> {
                             children: [
                               Text(
                                 '${valueOrDefault<String>(
-                                  _model.sliderValue?.toString(),
+                                  formatNumber(
+                                    _model.sliderValue,
+                                    formatType: FormatType.custom,
+                                    format: '##',
+                                    locale: '',
+                                  ),
                                   '5',
                                 )} Miles',
                                 style: FlutterFlowTheme.of(context)
@@ -224,7 +232,7 @@ class _FilterWidgetState extends State<FilterWidget> {
                                     ),
                               ),
                               Container(
-                                width: 280.0,
+                                width: 225.0,
                                 child: Slider(
                                   activeColor:
                                       FlutterFlowTheme.of(context).primary,
@@ -509,8 +517,11 @@ class _FilterWidgetState extends State<FilterWidget> {
                     children: [
                       FFButtonWidget(
                         onPressed: () async {
+                          logFirebaseEvent('FILTER_COMP_CLEAR_ALL_BTN_ON_TAP');
+                          logFirebaseEvent('Button_clear_all_select_all');
                           safeSetState(() =>
                               _model.choiceChipsValueController1?.value = []);
+                          logFirebaseEvent('Button_clear_all_select_all');
                           safeSetState(() =>
                               _model.choiceChipsValueController2?.value = []);
                         },
@@ -554,6 +565,10 @@ class _FilterWidgetState extends State<FilterWidget> {
                       ),
                       FFButtonWidget(
                         onPressed: () async {
+                          logFirebaseEvent(
+                              'FILTER_COMP_APPLY_FILTERS_BTN_ON_TAP');
+                          logFirebaseEvent('Button_backend_call');
+
                           await currentUserReference!.update({
                             ...createUsersRecordData(
                               radiusSaved: _model.sliderValue,
@@ -565,6 +580,10 @@ class _FilterWidgetState extends State<FilterWidget> {
                               },
                             ),
                           });
+                          logFirebaseEvent('Button_update_app_state');
+                          FFAppState().showFullList = false;
+                          _model.updatePage(() {});
+                          logFirebaseEvent('Button_bottom_sheet');
                           Navigator.pop(context);
                         },
                         text: 'Apply Filters',

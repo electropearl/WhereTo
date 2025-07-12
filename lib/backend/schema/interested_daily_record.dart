@@ -30,12 +30,25 @@ class InterestedDailyRecord extends FirestoreRecord {
   List<DocumentReference> get peopleList => _peopleList ?? const [];
   bool hasPeopleList() => _peopleList != null;
 
+  // "totalGroupInterestToday" field.
+  int? _totalGroupInterestToday;
+  int get totalGroupInterestToday => _totalGroupInterestToday ?? 0;
+  bool hasTotalGroupInterestToday() => _totalGroupInterestToday != null;
+
+  // "groupList" field.
+  List<DocumentReference>? _groupList;
+  List<DocumentReference> get groupList => _groupList ?? const [];
+  bool hasGroupList() => _groupList != null;
+
   DocumentReference get parentReference => reference.parent.parent!;
 
   void _initializeFields() {
     _dateTime = snapshotData['dateTime'] as DateTime?;
     _totalInterestToday = castToType<int>(snapshotData['totalInterestToday']);
     _peopleList = getDataList(snapshotData['peopleList']);
+    _totalGroupInterestToday =
+        castToType<int>(snapshotData['totalGroupInterestToday']);
+    _groupList = getDataList(snapshotData['groupList']);
   }
 
   static Query<Map<String, dynamic>> collection([DocumentReference? parent]) =>
@@ -80,11 +93,13 @@ class InterestedDailyRecord extends FirestoreRecord {
 Map<String, dynamic> createInterestedDailyRecordData({
   DateTime? dateTime,
   int? totalInterestToday,
+  int? totalGroupInterestToday,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
       'dateTime': dateTime,
       'totalInterestToday': totalInterestToday,
+      'totalGroupInterestToday': totalGroupInterestToday,
     }.withoutNulls,
   );
 
@@ -100,12 +115,19 @@ class InterestedDailyRecordDocumentEquality
     const listEquality = ListEquality();
     return e1?.dateTime == e2?.dateTime &&
         e1?.totalInterestToday == e2?.totalInterestToday &&
-        listEquality.equals(e1?.peopleList, e2?.peopleList);
+        listEquality.equals(e1?.peopleList, e2?.peopleList) &&
+        e1?.totalGroupInterestToday == e2?.totalGroupInterestToday &&
+        listEquality.equals(e1?.groupList, e2?.groupList);
   }
 
   @override
-  int hash(InterestedDailyRecord? e) => const ListEquality()
-      .hash([e?.dateTime, e?.totalInterestToday, e?.peopleList]);
+  int hash(InterestedDailyRecord? e) => const ListEquality().hash([
+        e?.dateTime,
+        e?.totalInterestToday,
+        e?.peopleList,
+        e?.totalGroupInterestToday,
+        e?.groupList
+      ]);
 
   @override
   bool isValidKey(Object? o) => o is InterestedDailyRecord;

@@ -42,6 +42,7 @@ class _SeekingWidgetState extends State<SeekingWidget> {
     super.initState();
     _model = createModel(context, () => SeekingModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'seeking'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -300,6 +301,10 @@ class _SeekingWidgetState extends State<SeekingWidget> {
                       ),
                       FFButtonWidget(
                         onPressed: () async {
+                          logFirebaseEvent(
+                              'SEEKING_PAGE_SAVE__CONTINUE_BTN_ON_TAP');
+                          logFirebaseEvent('Button_backend_call');
+
                           await currentUserReference!.update({
                             ...mapToFirestore(
                               {
@@ -307,6 +312,7 @@ class _SeekingWidgetState extends State<SeekingWidget> {
                               },
                             ),
                           });
+                          logFirebaseEvent('Button_navigate_to');
 
                           context.pushNamed(LocationPermissionWidget.routeName);
                         },

@@ -411,11 +411,19 @@ class _InviteFriendWidgetState extends State<InviteFriendWidget> {
                                                                 friendsItem] =
                                                             newValue!);
                                                     if (newValue!) {
+                                                      logFirebaseEvent(
+                                                          'INVITE_FRIEND_Checkbox_zq8e3hud_ON_TOGGL');
+                                                      logFirebaseEvent(
+                                                          'Checkbox_update_component_state');
                                                       _model.addToFriendsInvite(
                                                           containerUsersRecord
                                                               .reference);
                                                       safeSetState(() {});
                                                     } else {
+                                                      logFirebaseEvent(
+                                                          'INVITE_FRIEND_Checkbox_zq8e3hud_ON_TOGGL');
+                                                      logFirebaseEvent(
+                                                          'Checkbox_update_component_state');
                                                       _model.removeFromFriendsInvite(
                                                           containerUsersRecord
                                                               .reference);
@@ -588,6 +596,9 @@ class _InviteFriendWidgetState extends State<InviteFriendWidget> {
                           if (widget.status == 'no')
                             FFButtonWidget(
                               onPressed: () async {
+                                logFirebaseEvent(
+                                    'INVITE_FRIEND_SEND_REQUEST_BTN_ON_TAP');
+                                logFirebaseEvent('Button_bottom_sheet');
                                 Navigator.pop(context, _model.friendsInvite);
                               },
                               text: 'Send Request',
@@ -629,6 +640,9 @@ class _InviteFriendWidgetState extends State<InviteFriendWidget> {
                           if (widget.status == 'exist')
                             FFButtonWidget(
                               onPressed: () async {
+                                logFirebaseEvent(
+                                    'INVITE_FRIEND_SEND_REQUEST_BTN_ON_TAP');
+                                logFirebaseEvent('Button_bottom_sheet');
                                 Navigator.pop(context, _model.friendsInvite);
                                 for (int loop1Index = 0;
                                     loop1Index <=
@@ -638,6 +652,8 @@ class _InviteFriendWidgetState extends State<InviteFriendWidget> {
                                       _model.friendsInvite[loop1Index];
                                   if (!widget.groupRef!.memberUserIds
                                       .contains(currentLoop1Item)) {
+                                    logFirebaseEvent('Button_backend_call');
+
                                     await GroupInvitesRecord.collection
                                         .doc()
                                         .set({

@@ -35,6 +35,7 @@ class _OwnerWidgetState extends State<OwnerWidget> {
     super.initState();
     _model = createModel(context, () => OwnerModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'owner'});
     _model.switchValue = false;
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
@@ -74,6 +75,9 @@ class _OwnerWidgetState extends State<OwnerWidget> {
                       size: 24.0,
                     ),
                     onPressed: () async {
+                      logFirebaseEvent(
+                          'OWNER_PAGE_arrow_back_rounded_ICN_ON_TAP');
+                      logFirebaseEvent('IconButton_navigate_back');
                       context.safePop();
                     },
                   ),
@@ -477,6 +481,10 @@ class _OwnerWidgetState extends State<OwnerWidget> {
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
+                                logFirebaseEvent(
+                                    'OWNER_PAGE_Container_zgy4xk6n_ON_TAP');
+                                logFirebaseEvent('Container_navigate_to');
+
                                 context.pushNamed(AnalyticsWidget.routeName);
                               },
                               child: Container(

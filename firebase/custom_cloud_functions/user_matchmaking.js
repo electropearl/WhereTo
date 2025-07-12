@@ -1,6 +1,5 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-// To avoid deployment errors, do not call admin.initializeApp() in your code
 const db = admin.firestore();
 
 exports.userMatchmaking = functions.firestore
@@ -10,21 +9,23 @@ exports.userMatchmaking = functions.firestore
     const before = change.before.data();
     const after = change.after.data();
 
-    const prevUsers = before.usersHereNow || [];
-    const currUsers = after.usersHereNow || [];
+    const prevRefs = before.usersHereNow || [];
+    const currRefs = after.usersHereNow || [];
 
-    const newUsers = currUsers.filter((uid) => !prevUsers.includes(uid));
-    if (newUsers.length === 0) return;
+    const prevPaths = prevRefs.map((ref) => ref.path);
+    const currPaths = currRefs.map((ref) => ref.path);
 
-    const userDocs = await Promise.all(
-      currUsers.map((uid) => db.doc(`users/${uid}`).get()),
-    );
+    const newRefs = currRefs.filter((ref) => !prevPaths.includes(ref.path));
+    if (newRefs.length === 0) return;
+
+    const userDocs = await Promise.all(currRefs.map((ref) => ref.get()));
 
     const allUsers = userDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    const venueSize = currUsers.length;
+    const venueSize = currRefs.length;
 
-    for (const newUserId of newUsers) {
-      const newUser = allUsers.find((u) => u.id === newUserId);
+    for (const newRef of newRefs) {
+      const newUserDoc = await newRef.get();
+      const newUser = { id: newUserDoc.id, ...newUserDoc.data() };
       if (!newUser || !newUser.interests || !newUser.arrivedAt) continue;
 
       const minutesSinceArrival =
@@ -39,9 +40,9 @@ exports.userMatchmaking = functions.firestore
 
       const candidates = allUsers.filter((candidate) => {
         return (
-          candidate.id !== newUserId &&
-          !candidate.matchedWith?.includes(newUserId) &&
-          !newUser.matchedWith?.includes(candidate.id)
+          candidate.id !== newUser.id &&
+          !candidate.matchedUserIds?.includes(newUser.id) &&
+          !newUser.matchedUserIds?.includes(candidate.id)
         );
       });
 
@@ -70,14 +71,14 @@ exports.userMatchmaking = functions.firestore
       }
 
       if (bestMatch) {
-        await db.collection("matches").add({
-          userAId: db.doc(`users/${newUserId}`),
+        const matchRef = await db.collection("matches").add({
+          userAId: db.doc(`users/${newUser.id}`),
           userBId: db.doc(`users/${bestMatch.id}`),
           venueId: db.doc(`venues/${venueId}`),
           userAName: newUser.displayName || "",
           userBName: bestMatch.displayName || "",
-          userALoc: newUser.geoLocation || null,
-          userBLoc: bestMatch.geoLocation || null,
+          userALoc: newUser.location || null,
+          userBLoc: bestMatch.location || null,
           status: "pending",
           compassStarted: false,
           lastSafetyPingAt: null,
@@ -85,16 +86,44 @@ exports.userMatchmaking = functions.firestore
           matchStrength: bestScore,
           priorityGivenTo:
             newUser.subscription && !bestMatch.subscription
-              ? newUserId
+              ? newUser.id
               : bestMatch.id,
         });
 
-        await db.doc(`users/${newUserId}`).update({
-          matchedWith: admin.firestore.FieldValue.arrayUnion(bestMatch.id),
+        await db.doc(`users/${newUser.id}`).update({
+          matchedUserIds: admin.firestore.FieldValue.arrayUnion(bestMatch.id),
         });
+
         await db.doc(`users/${bestMatch.id}`).update({
-          matchedWith: admin.firestore.FieldValue.arrayUnion(newUserId),
+          matchedUserIds: admin.firestore.FieldValue.arrayUnion(newUser.id),
         });
+
+        // --- Send push notifications to both users
+        const sendNotification = async (user, otherUser, matchRef) => {
+          if (!user.fcmToken) return;
+
+          const payload = {
+            notification: {
+              title: "It’s a Match!",
+              body: `You matched with ${otherUser.displayName || "someone nearby"}!`,
+            },
+            data: {
+              screen: "matchDecide",
+              userRef: otherUser.id,
+              matchRef: matchRef.id,
+            },
+            token: user.fcmToken,
+          };
+
+          try {
+            await admin.messaging().send(payload);
+          } catch (e) {
+            console.error("FCM error:", e);
+          }
+        };
+
+        await sendNotification(newUser, bestMatch, matchRef);
+        await sendNotification(bestMatch, newUser, matchRef);
       }
     }
 

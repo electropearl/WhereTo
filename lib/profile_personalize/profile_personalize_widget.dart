@@ -48,6 +48,8 @@ class _ProfilePersonalizeWidgetState extends State<ProfilePersonalizeWidget> {
     super.initState();
     _model = createModel(context, () => ProfilePersonalizeModel());
 
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'profilePersonalize'});
     _model.textController1 ??= TextEditingController();
     _model.textFieldFocusNode1 ??= FocusNode();
 
@@ -200,6 +202,10 @@ class _ProfilePersonalizeWidgetState extends State<ProfilePersonalizeWidget> {
                                   hoverColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
                                   onTap: () async {
+                                    logFirebaseEvent(
+                                        'PROFILE_PERSONALIZE_Stack_i6im0w2v_ON_TA');
+                                    logFirebaseEvent(
+                                        'Stack_upload_media_to_firebase');
                                     final selectedMedia =
                                         await selectMediaWithSourceBottomSheet(
                                       context: context,
@@ -1206,6 +1212,10 @@ class _ProfilePersonalizeWidgetState extends State<ProfilePersonalizeWidget> {
                                         ),
                                         FFButtonWidget(
                                           onPressed: () async {
+                                            logFirebaseEvent(
+                                                'PROFILE_PERSONALIZE_ENTER_BIRTHDAY_HERE_');
+                                            logFirebaseEvent(
+                                                'Button_date_time_picker');
                                             final _datePickedDate =
                                                 await showDatePicker(
                                               context: context,
@@ -1289,6 +1299,8 @@ class _ProfilePersonalizeWidgetState extends State<ProfilePersonalizeWidget> {
                                                     getCurrentTimestamp;
                                               });
                                             }
+                                            logFirebaseEvent(
+                                                'Button_update_page_state');
                                             _model.birth = _model.datePicked;
                                           },
                                           text: 'Enter Birthday Here',
@@ -1467,7 +1479,11 @@ class _ProfilePersonalizeWidgetState extends State<ProfilePersonalizeWidget> {
                       ),
                       FFButtonWidget(
                         onPressed: () async {
+                          logFirebaseEvent(
+                              'PROFILE_PERSONALIZE_SAVE__CONTINUE_BTN_O');
                           if (functions.ageCheck(_model.birth!)) {
+                            logFirebaseEvent('Button_backend_call');
+
                             await currentUserReference!.update({
                               ...createUsersRecordData(
                                 displayName: valueOrDefault<String>(
@@ -1493,9 +1509,11 @@ class _ProfilePersonalizeWidgetState extends State<ProfilePersonalizeWidget> {
                                 },
                               ),
                             });
+                            logFirebaseEvent('Button_navigate_to');
 
                             context.pushNamed(HomeWidget.routeName);
                           } else {
+                            logFirebaseEvent('Button_alert_dialog');
                             await showDialog(
                               context: context,
                               builder: (alertDialogContext) {

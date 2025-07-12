@@ -22,12 +22,13 @@ Future<void> startListeningToGeofenceEventsWithGroupSupport() async {
     final venueId = event.identifier;
     final userRef = FirebaseFirestore.instance.doc('users/$userId');
     final venueRef = FirebaseFirestore.instance.doc('venues/$venueId');
+
     final userDoc = await userRef.get();
-    final groupRef = userDoc.data()?['currentGroup'];
+    final groupRef = userDoc.data()?['currentGroup'] as DocumentReference?;
 
     if (event.action == 'ENTER') {
       await userRef.update({
-        'currentVenue': venueId,
+        'currentVenue': venueRef,
         'arrivedAt': FieldValue.serverTimestamp(),
       });
 
@@ -36,7 +37,7 @@ Future<void> startListeningToGeofenceEventsWithGroupSupport() async {
       });
 
       if (groupRef != null) {
-        final groupDoc = await (groupRef as DocumentReference).get();
+        final groupDoc = await groupRef.get();
         final groupData = groupDoc.data() as Map<String, dynamic>?;
         final List<dynamic> memberIds = groupData?['memberUserIds'] ?? [];
 
@@ -45,7 +46,8 @@ Future<void> startListeningToGeofenceEventsWithGroupSupport() async {
           final memberDoc =
               await FirebaseFirestore.instance.doc('users/$memberId').get();
           final memberData = memberDoc.data();
-          if (memberData?['currentVenue'] != venueId) {
+          final memberVenue = memberData?['currentVenue'] as DocumentReference?;
+          if (memberVenue?.id != venueId) {
             allAtVenue = false;
             break;
           }
@@ -69,7 +71,7 @@ Future<void> startListeningToGeofenceEventsWithGroupSupport() async {
       });
 
       if (groupRef != null) {
-        final groupDoc = await (groupRef as DocumentReference).get();
+        final groupDoc = await groupRef.get();
         final groupData = groupDoc.data() as Map<String, dynamic>?;
         final List<dynamic> memberIds = groupData?['memberUserIds'] ?? [];
 
@@ -78,7 +80,8 @@ Future<void> startListeningToGeofenceEventsWithGroupSupport() async {
           final memberDoc =
               await FirebaseFirestore.instance.doc('users/$memberId').get();
           final memberData = memberDoc.data();
-          if (memberData?['currentVenue'] == venueId) {
+          final memberVenue = memberData?['currentVenue'] as DocumentReference?;
+          if (memberVenue?.id == venueId) {
             stillAtVenue = true;
             break;
           }

@@ -10,20 +10,30 @@ exports.userGroupFallbackMatchmaking = functions.firestore
     const before = change.before.data();
     const after = change.after.data();
 
-    const prevUsers = before.usersHereNow || [];
-    const currUsers = after.usersHereNow || [];
+    const prevUserRefs = before.usersHereNow || [];
+    const currUserRefs = after.usersHereNow || [];
 
-    const prevGroups = before.groupsHereNow || [];
-    const currGroups = after.groupsHereNow || [];
+    const prevGroupRefs = before.groupsHereNow || [];
+    const currGroupRefs = after.groupsHereNow || [];
 
-    const newUserIds = currUsers.filter((uid) => !prevUsers.includes(uid));
-    const newGroupIds = currGroups.filter((gid) => !prevGroups.includes(gid));
+    const prevUserPaths = prevUserRefs.map((ref) => ref.path);
+    const currUserPaths = currUserRefs.map((ref) => ref.path);
 
-    if (newUserIds.length === 0 && newGroupIds.length === 0) return;
+    const prevGroupPaths = prevGroupRefs.map((ref) => ref.path);
+    const currGroupPaths = currGroupRefs.map((ref) => ref.path);
+
+    const newUserRefs = currUserRefs.filter(
+      (ref) => !prevUserPaths.includes(ref.path),
+    );
+    const newGroupRefs = currGroupRefs.filter(
+      (ref) => !prevGroupPaths.includes(ref.path),
+    );
+
+    if (newUserRefs.length === 0 && newGroupRefs.length === 0) return;
 
     const [userDocs, groupDocs] = await Promise.all([
-      Promise.all(currUsers.map((uid) => db.doc(`users/${uid}`).get())),
-      Promise.all(currGroups.map((gid) => db.doc(`groups/${gid}`).get())),
+      Promise.all(currUserRefs.map((ref) => ref.get())),
+      Promise.all(currGroupRefs.map((ref) => ref.get())),
     ]);
 
     const allUsers = userDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
@@ -35,7 +45,7 @@ exports.userGroupFallbackMatchmaking = functions.firestore
       const userWaitMinutes = (Date.now() - user.arrivedAt.toMillis()) / 60000;
 
       let userThreshold = 0.75;
-      if (currUsers.length < 5) userThreshold -= 0.05;
+      if (currUserRefs.length < 5) userThreshold -= 0.05;
       if (userWaitMinutes > 5) userThreshold -= 0.05;
       if (userWaitMinutes > 10) userThreshold -= 0.1;
       if (user.subscription) userThreshold -= 0.05;
@@ -56,7 +66,7 @@ exports.userGroupFallbackMatchmaking = functions.firestore
           (Date.now() - group.createdAt.toMillis()) / 60000;
 
         let groupThreshold = 0.75;
-        if (currGroups.length < 5) groupThreshold -= 0.05;
+        if (currGroupRefs.length < 5) groupThreshold -= 0.05;
         if (groupWaitMinutes > 5) groupThreshold -= 0.05;
         if (groupWaitMinutes > 10) groupThreshold -= 0.1;
         if (group.subscription) groupThreshold -= 0.05;

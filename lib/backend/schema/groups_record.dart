@@ -85,6 +85,12 @@ class GroupsRecord extends FirestoreRecord {
   List<String> get interests => _interests ?? const [];
   bool hasInterests() => _interests != null;
 
+  // "MembersAtCurrentVenue" field.
+  List<DocumentReference>? _membersAtCurrentVenue;
+  List<DocumentReference> get membersAtCurrentVenue =>
+      _membersAtCurrentVenue ?? const [];
+  bool hasMembersAtCurrentVenue() => _membersAtCurrentVenue != null;
+
   void _initializeFields() {
     _groupId = snapshotData['groupId'] as String?;
     _memberUserIds = getDataList(snapshotData['memberUserIds']);
@@ -100,6 +106,7 @@ class GroupsRecord extends FirestoreRecord {
     _dynamicSingleWord = snapshotData['DynamicSingleWord'] as String?;
     _seekingType = getDataList(snapshotData['seekingType']);
     _interests = getDataList(snapshotData['interests']);
+    _membersAtCurrentVenue = getDataList(snapshotData['MembersAtCurrentVenue']);
   }
 
   static CollectionReference get collection =>
@@ -182,7 +189,9 @@ class GroupsRecordDocumentEquality implements Equality<GroupsRecord> {
         e1?.venue == e2?.venue &&
         e1?.dynamicSingleWord == e2?.dynamicSingleWord &&
         listEquality.equals(e1?.seekingType, e2?.seekingType) &&
-        listEquality.equals(e1?.interests, e2?.interests);
+        listEquality.equals(e1?.interests, e2?.interests) &&
+        listEquality.equals(
+            e1?.membersAtCurrentVenue, e2?.membersAtCurrentVenue);
   }
 
   @override
@@ -200,7 +209,8 @@ class GroupsRecordDocumentEquality implements Equality<GroupsRecord> {
         e?.venue,
         e?.dynamicSingleWord,
         e?.seekingType,
-        e?.interests
+        e?.interests,
+        e?.membersAtCurrentVenue
       ]);
 
   @override

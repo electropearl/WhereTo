@@ -518,6 +518,9 @@ class _GroupInfoHelpWidgetState extends State<GroupInfoHelpWidget> {
                   ),
                   FFButtonWidget(
                     onPressed: () async {
+                      logFirebaseEvent(
+                          'GROUP_INFO_HELP_COMP_GOT_IT_BTN_ON_TAP');
+                      logFirebaseEvent('Button_bottom_sheet');
                       Navigator.pop(context);
                     },
                     text: 'Got It!',

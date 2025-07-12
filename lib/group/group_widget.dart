@@ -44,6 +44,7 @@ class _GroupWidgetState extends State<GroupWidget> {
     super.initState();
     _model = createModel(context, () => GroupModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'group'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -79,6 +80,8 @@ class _GroupWidgetState extends State<GroupWidget> {
                   size: 24.0,
                 ),
                 onPressed: () async {
+                  logFirebaseEvent('GROUP_PAGE_arrow_back_rounded_ICN_ON_TAP');
+                  logFirebaseEvent('IconButton_navigate_back');
                   context.safePop();
                 },
               ),
@@ -108,6 +111,8 @@ class _GroupWidgetState extends State<GroupWidget> {
                       size: 24.0,
                     ),
                     onPressed: () async {
+                      logFirebaseEvent('GROUP_PAGE_info_outlined_ICN_ON_TAP');
+                      logFirebaseEvent('IconButton_bottom_sheet');
                       await showModalBottomSheet(
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
@@ -254,6 +259,10 @@ class _GroupWidgetState extends State<GroupWidget> {
                                                 highlightColor:
                                                     Colors.transparent,
                                                 onTap: () async {
+                                                  logFirebaseEvent(
+                                                      'GROUP_PAGE_Row_tp07unl3_ON_TAP');
+                                                  logFirebaseEvent(
+                                                      'Row_launch_map');
                                                   await launchMap(
                                                     location: rowVenuesRecord
                                                         .location,
@@ -490,6 +499,9 @@ class _GroupWidgetState extends State<GroupWidget> {
                                     ),
                                     FFButtonWidget(
                                       onPressed: () async {
+                                        logFirebaseEvent(
+                                            'GROUP_PAGE_INVITE_BTN_ON_TAP');
+                                        logFirebaseEvent('Button_bottom_sheet');
                                         await showModalBottomSheet(
                                           isScrollControlled: true,
                                           backgroundColor: Colors.transparent,
@@ -1037,6 +1049,9 @@ class _GroupWidgetState extends State<GroupWidget> {
                                 Expanded(
                                   child: FFButtonWidget(
                                     onPressed: () async {
+                                      logFirebaseEvent(
+                                          'GROUP_PAGE_LEAVE_GROUP_BTN_ON_TAP');
+                                      logFirebaseEvent('Button_alert_dialog');
                                       var confirmDialogResponse =
                                           await showDialog<bool>(
                                                 context: context,
@@ -1067,6 +1082,8 @@ class _GroupWidgetState extends State<GroupWidget> {
                                               ) ??
                                               false;
                                       if (confirmDialogResponse) {
+                                        logFirebaseEvent('Button_backend_call');
+
                                         await currentUserReference!.update({
                                           ...mapToFirestore(
                                             {
@@ -1075,6 +1092,7 @@ class _GroupWidgetState extends State<GroupWidget> {
                                             },
                                           ),
                                         });
+                                        logFirebaseEvent('Button_navigate_to');
 
                                         context.pushNamed(
                                             GroupManagementWidget.routeName);
@@ -1121,6 +1139,10 @@ class _GroupWidgetState extends State<GroupWidget> {
                                 Expanded(
                                   child: FFButtonWidget(
                                     onPressed: () async {
+                                      logFirebaseEvent(
+                                          'GROUP_PAGE_FIND_VENUE_BTN_ON_TAP');
+                                      logFirebaseEvent('Button_navigate_to');
+
                                       context.pushNamed(HomeWidget.routeName);
                                     },
                                     text: 'Find Venue',

@@ -10,6 +10,7 @@ import '/index.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
 import 'profile_model.dart';
 export 'profile_model.dart';
 
@@ -41,6 +42,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     super.initState();
     _model = createModel(context, () => ProfileModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'profile'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -98,6 +100,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                         size: 24.0,
                       ),
                       onPressed: () async {
+                        logFirebaseEvent('PROFILE_PAGE_settings_ICN_ON_TAP');
+                        logFirebaseEvent('IconButton_navigate_to');
+
                         context.pushNamed(SettingsWidget.routeName);
                       },
                     ),
@@ -283,6 +288,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                   hoverColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
                                   onTap: () async {
+                                    logFirebaseEvent(
+                                        'PROFILE_PAGE_Container_6so5hfql_ON_TAP');
+                                    logFirebaseEvent('Container_navigate_to');
+
                                     context.pushNamed(OwnerWidget.routeName);
                                   },
                                   child: Container(
@@ -333,12 +342,133 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                   hoverColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
                                   onTap: () async {
+                                    logFirebaseEvent(
+                                        'PROFILE_PAGE_Container_nyf0umbs_ON_TAP');
+                                    logFirebaseEvent('Container_navigate_to');
+
+                                    context
+                                        .pushNamed(AddFriendWidget.routeName);
+                                  },
+                                  child: Container(
+                                    height: 28.0,
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondary,
+                                      borderRadius: BorderRadius.circular(14.0),
+                                    ),
+                                    child: Align(
+                                      alignment: AlignmentDirectional(0.0, 0.0),
+                                      child: Text(
+                                        'Add Friend',
+                                        style: FlutterFlowTheme.of(context)
+                                            .labelMedium
+                                            .override(
+                                              font: GoogleFonts.inter(
+                                                fontWeight: FontWeight.w600,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMedium
+                                                        .fontStyle,
+                                              ),
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                              letterSpacing: 0.0,
+                                              fontWeight: FontWeight.w600,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .labelMedium
+                                                      .fontStyle,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: AlignmentDirectional(0.0, 0.0),
+                              child: Builder(
+                                builder: (context) => Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 8.0, 0.0, 0.0),
+                                  child: InkWell(
+                                    splashColor: Colors.transparent,
+                                    focusColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () async {
+                                      logFirebaseEvent(
+                                          'PROFILE_PAGE_Container_39qtfebl_ON_TAP');
+                                      logFirebaseEvent('Container_share');
+                                      await Share.share(
+                                        'https://testflight.apple.com/join/uGZbgfAU',
+                                        sharePositionOrigin:
+                                            getWidgetBoundingBox(context),
+                                      );
+                                    },
+                                    child: Container(
+                                      height: 28.0,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFE39D2C0),
+                                        borderRadius:
+                                            BorderRadius.circular(14.0),
+                                      ),
+                                      child: Align(
+                                        alignment:
+                                            AlignmentDirectional(0.0, 0.0),
+                                        child: Text(
+                                          'Share App',
+                                          style: FlutterFlowTheme.of(context)
+                                              .labelMedium
+                                              .override(
+                                                font: GoogleFonts.inter(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .labelMedium
+                                                          .fontStyle,
+                                                ),
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryText,
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w600,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMedium
+                                                        .fontStyle,
+                                              ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: AlignmentDirectional(0.0, 0.0),
+                              child: Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 8.0, 0.0, 0.0),
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    logFirebaseEvent(
+                                        'PROFILE_PAGE_Container_vllmmpdb_ON_TAP');
+                                    logFirebaseEvent('Container_backend_call');
                                     _model.apiResult24db2 =
                                         await FetchVenuesCall.call(
                                       location: '29.4241,-98.4936',
                                       radius: 50000,
                                     );
 
+                                    logFirebaseEvent(
+                                        'Container_update_page_state');
                                     _model.current = 0;
                                     safeSetState(() {});
                                     if (FetchVenuesCall.results(
@@ -358,12 +488,16 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                                 ''),
                                           )!
                                               .length) {
+                                        logFirebaseEvent(
+                                            'Container_update_page_state');
                                         _model.currentItem =
                                             FetchVenuesCall.results(
                                           (_model.apiResult24db2?.jsonBody ??
                                               ''),
                                         )?.elementAtOrNull(_model.current!);
                                         safeSetState(() {});
+                                        logFirebaseEvent(
+                                            'Container_backend_call');
                                         _model.apiResultxki22 =
                                             await FetchPlaceDetailsCall.call(
                                           placeId: getJsonField(
@@ -372,6 +506,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                           ).toString(),
                                         );
 
+                                        logFirebaseEvent(
+                                            'Container_firestore_query');
                                         _model.docExist2 =
                                             await queryVenuesRecordOnce(
                                           queryBuilder: (venuesRecord) =>
@@ -386,6 +522,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                         ).then((s) => s.firstOrNull);
                                         if ((_model.docExist2 != null) ==
                                             true) {
+                                          logFirebaseEvent(
+                                              'Container_show_snack_bar');
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             SnackBar(
@@ -405,6 +543,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                             ),
                                           );
                                         } else {
+                                          logFirebaseEvent(
+                                              'Container_custom_action');
                                           _model.locationLatLng =
                                               await actions.convertToGeoPoint(
                                             getJsonField(
@@ -416,6 +556,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                               r'''$.geometry.location.lng''',
                                             ).toString(),
                                           );
+                                          logFirebaseEvent(
+                                              'Container_backend_call');
 
                                           var venuesRecordReference =
                                               VenuesRecord.collection
@@ -541,6 +683,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                               },
                                             ),
                                           }, venuesRecordReference);
+                                          logFirebaseEvent(
+                                              'Container_show_snack_bar');
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             SnackBar(
@@ -561,12 +705,18 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                           );
                                         }
 
+                                        logFirebaseEvent(
+                                            'Container_update_page_state');
                                         _model.current = _model.current! + 1;
                                         safeSetState(() {});
                                       }
+                                      logFirebaseEvent(
+                                          'Container_update_app_state');
                                       FFAppState().showFullList = true;
                                       FFAppState().update(() {});
                                     } else {
+                                      logFirebaseEvent(
+                                          'Container_show_snack_bar');
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
@@ -652,8 +802,11 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                 ),
                                 AuthUserStreamWidget(
                                   builder: (context) => Text(
-                                    valueOrDefault(
-                                        currentUserDocument?.bio, ''),
+                                    valueOrDefault<String>(
+                                      valueOrDefault(
+                                          currentUserDocument?.bio, ''),
+                                      'NA',
+                                    ),
                                     style: FlutterFlowTheme.of(context)
                                         .bodyMedium
                                         .override(
@@ -709,186 +862,96 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                                   .fontStyle,
                                         ),
                                   ),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  12.0, 6.0, 12.0, 6.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
+                                  AuthUserStreamWidget(
+                                    builder: (context) => Builder(
+                                      builder: (context) {
+                                        final interests = (currentUserDocument
+                                                    ?.interests
+                                                    .toList() ??
+                                                [])
+                                            .toList();
+
+                                        return Wrap(
+                                          spacing: 0.0,
+                                          runSpacing: 0.0,
+                                          alignment: WrapAlignment.start,
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.start,
+                                          direction: Axis.horizontal,
+                                          runAlignment: WrapAlignment.start,
+                                          verticalDirection:
+                                              VerticalDirection.down,
+                                          clipBehavior: Clip.none,
+                                          children:
+                                              List.generate(interests.length,
+                                                  (interestsIndex) {
+                                            final interestsItem =
+                                                interests[interestsIndex];
+                                            return Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .fromSTEB(
+                                                      12.0, 6.0, 12.0, 6.0),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
                                                       .secondaryBackground,
-                                              borderRadius:
-                                                  BorderRadius.circular(16.0),
-                                              border: Border.all(
-                                                color:
-                                                    FlutterFlowTheme.of(context)
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          16.0),
+                                                  border: Border.all(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
                                                         .primary,
-                                                width: 1.0,
-                                              ),
-                                            ),
-                                            child: Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text(
-                                                'Chill',
-                                                style: FlutterFlowTheme.of(
-                                                        context)
-                                                    .labelMedium
-                                                    .override(
-                                                      font: GoogleFonts.inter(
-                                                        fontWeight:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelMedium
-                                                                .fontWeight,
-                                                        fontStyle:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelMedium
-                                                                .fontStyle,
-                                                      ),
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primary,
-                                                      letterSpacing: 0.0,
-                                                      fontWeight:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .labelMedium
-                                                              .fontWeight,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .labelMedium
-                                                              .fontStyle,
+                                                    width: 1.0,
+                                                  ),
+                                                ),
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    valueOrDefault<String>(
+                                                      interestsItem,
+                                                      'NA',
                                                     ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  12.0, 6.0, 12.0, 6.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryBackground,
-                                              borderRadius:
-                                                  BorderRadius.circular(16.0),
-                                              border: Border.all(
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primary,
-                                                width: 1.0,
-                                              ),
-                                            ),
-                                            child: Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text(
-                                                'Adventurous',
-                                                style: FlutterFlowTheme.of(
-                                                        context)
-                                                    .labelMedium
-                                                    .override(
-                                                      font: GoogleFonts.inter(
-                                                        fontWeight:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelMedium
-                                                                .fontWeight,
-                                                        fontStyle:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelMedium
-                                                                .fontStyle,
-                                                      ),
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
+                                                    style: FlutterFlowTheme.of(
+                                                            context)
+                                                        .labelMedium
+                                                        .override(
+                                                          font:
+                                                              GoogleFonts.inter(
+                                                            fontWeight:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .labelMedium
+                                                                    .fontWeight,
+                                                            fontStyle:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .labelMedium
+                                                                    .fontStyle,
+                                                          ),
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
                                                               .primary,
-                                                      letterSpacing: 0.0,
-                                                      fontWeight:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .labelMedium
-                                                              .fontWeight,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .labelMedium
-                                                              .fontStyle,
-                                                    ),
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .labelMedium
+                                                                  .fontWeight,
+                                                          fontStyle:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .labelMedium
+                                                                  .fontStyle,
+                                                        ),
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  12.0, 6.0, 12.0, 6.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryBackground,
-                                              borderRadius:
-                                                  BorderRadius.circular(16.0),
-                                              border: Border.all(
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primary,
-                                                width: 1.0,
-                                              ),
-                                            ),
-                                            child: Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text(
-                                                'Social',
-                                                style: FlutterFlowTheme.of(
-                                                        context)
-                                                    .labelMedium
-                                                    .override(
-                                                      font: GoogleFonts.inter(
-                                                        fontWeight:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelMedium
-                                                                .fontWeight,
-                                                        fontStyle:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelMedium
-                                                                .fontStyle,
-                                                      ),
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primary,
-                                                      letterSpacing: 0.0,
-                                                      fontWeight:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .labelMedium
-                                                              .fontWeight,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .labelMedium
-                                                              .fontStyle,
-                                                    ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ].divide(SizedBox(width: 8.0)),
+                                            );
+                                          }),
+                                        );
+                                      },
                                     ),
                                   ),
                                 ].divide(SizedBox(height: 12.0)),
@@ -918,33 +981,57 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                             .fontStyle,
                                       ),
                                 ),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            12.0, 6.0, 12.0, 6.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryBackground,
-                                            borderRadius:
-                                                BorderRadius.circular(16.0),
-                                            border: Border.all(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
+                                AuthUserStreamWidget(
+                                  builder: (context) => Builder(
+                                    builder: (context) {
+                                      final vibesPref = (currentUserDocument
+                                                  ?.vibePreferances
+                                                  .toList() ??
+                                              [])
+                                          .toList();
+
+                                      return Wrap(
+                                        spacing: 0.0,
+                                        runSpacing: 0.0,
+                                        alignment: WrapAlignment.start,
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.start,
+                                        direction: Axis.horizontal,
+                                        runAlignment: WrapAlignment.start,
+                                        verticalDirection:
+                                            VerticalDirection.down,
+                                        clipBehavior: Clip.none,
+                                        children: List.generate(
+                                            vibesPref.length, (vibesPrefIndex) {
+                                          final vibesPrefItem =
+                                              vibesPref[vibesPrefIndex];
+                                          return Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    12.0, 6.0, 12.0, 6.0),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                borderRadius:
+                                                    BorderRadius.circular(16.0),
+                                                border: Border.all(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
                                                       .primary,
-                                              width: 1.0,
-                                            ),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Text(
-                                              'Chill',
-                                              style:
-                                                  FlutterFlowTheme.of(context)
+                                                  width: 1.0,
+                                                ),
+                                              ),
+                                              child: Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  valueOrDefault<String>(
+                                                    vibesPrefItem,
+                                                    'NA',
+                                                  ),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
                                                       .labelMedium
                                                       .override(
                                                         font: GoogleFonts.inter(
@@ -975,123 +1062,13 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                                                 .labelMedium
                                                                 .fontStyle,
                                                       ),
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            12.0, 6.0, 12.0, 6.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryBackground,
-                                            borderRadius:
-                                                BorderRadius.circular(16.0),
-                                            border: Border.all(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              width: 1.0,
-                                            ),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Text(
-                                              'Adventurous',
-                                              style:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .override(
-                                                        font: GoogleFonts.inter(
-                                                          fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .labelMedium
-                                                                  .fontWeight,
-                                                          fontStyle:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .labelMedium
-                                                                  .fontStyle,
-                                                        ),
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .primary,
-                                                        letterSpacing: 0.0,
-                                                        fontWeight:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelMedium
-                                                                .fontWeight,
-                                                        fontStyle:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelMedium
-                                                                .fontStyle,
-                                                      ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            12.0, 6.0, 12.0, 6.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryBackground,
-                                            borderRadius:
-                                                BorderRadius.circular(16.0),
-                                            border: Border.all(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              width: 1.0,
-                                            ),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Text(
-                                              'Social',
-                                              style:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .override(
-                                                        font: GoogleFonts.inter(
-                                                          fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .labelMedium
-                                                                  .fontWeight,
-                                                          fontStyle:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .labelMedium
-                                                                  .fontStyle,
-                                                        ),
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .primary,
-                                                        letterSpacing: 0.0,
-                                                        fontWeight:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelMedium
-                                                                .fontWeight,
-                                                        fontStyle:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelMedium
-                                                                .fontStyle,
-                                                      ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ].divide(SizedBox(width: 8.0)),
+                                          );
+                                        }),
+                                      );
+                                    },
                                   ),
                                 ),
                               ].divide(SizedBox(height: 12.0)),
@@ -1149,11 +1126,21 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                                 _model.switchListTileValue =
                                                     newValue);
                                             if (newValue) {
+                                              logFirebaseEvent(
+                                                  'PROFILE_SwitchListTile_f8x9dsmz_ON_TOGGL');
+                                              logFirebaseEvent(
+                                                  'SwitchListTile_backend_call');
+
                                               await currentUserReference!
                                                   .update(createUsersRecordData(
                                                 openToMatch: true,
                                               ));
                                             } else {
+                                              logFirebaseEvent(
+                                                  'PROFILE_SwitchListTile_f8x9dsmz_ON_TOGGL');
+                                              logFirebaseEvent(
+                                                  'SwitchListTile_backend_call');
+
                                               await currentUserReference!
                                                   .update(createUsersRecordData(
                                                 openToMatch: false,
@@ -1238,8 +1225,12 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                               padding: EdgeInsetsDirectional.fromSTEB(
                                   0.0, 0.0, 0.0, 10.0),
                               child: FFButtonWidget(
-                                onPressed: () {
-                                  print('Button pressed ...');
+                                onPressed: () async {
+                                  logFirebaseEvent(
+                                      'PROFILE_PAGE_EDIT_PROFILE_BTN_ON_TAP');
+                                  logFirebaseEvent('Button_navigate_to');
+
+                                  context.pushNamed(SettingsWidget.routeName);
                                 },
                                 text: 'Edit Profile',
                                 options: FFButtonOptions(

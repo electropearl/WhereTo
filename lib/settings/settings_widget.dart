@@ -36,6 +36,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
     super.initState();
     _model = createModel(context, () => SettingsModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'settings'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -71,6 +72,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                   size: 24.0,
                 ),
                 onPressed: () async {
+                  logFirebaseEvent('SETTINGS_arrow_back_rounded_ICN_ON_TAP');
+                  logFirebaseEvent('IconButton_navigate_back');
                   context.safePop();
                 },
               ),
@@ -1266,6 +1269,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                 hoverColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
+                                  logFirebaseEvent(
+                                      'SETTINGS_PAGE_Row_lyo7173p_ON_TAP');
+                                  logFirebaseEvent('Row_navigate_to');
+
                                   context.pushNamed(SupportWidget.routeName);
                                 },
                                 child: Row(
@@ -1566,6 +1573,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                 hoverColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
+                                  logFirebaseEvent(
+                                      'SETTINGS_PAGE_Row_079br7mn_ON_TAP');
+                                  logFirebaseEvent('Row_navigate_to');
+
                                   context.pushNamed(
                                       TermsAndConditionsWidget.routeName);
                                 },
@@ -1633,6 +1644,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                 hoverColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
+                                  logFirebaseEvent(
+                                      'SETTINGS_PAGE_Row_x99h77gj_ON_TAP');
+                                  logFirebaseEvent('Row_navigate_to');
+
                                   context
                                       .pushNamed(PrivacyPolicyWidget.routeName);
                                 },
@@ -1775,6 +1790,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                       ),
                       FFButtonWidget(
                         onPressed: () async {
+                          logFirebaseEvent('SETTINGS_PAGE_SIGN_OUT_BTN_ON_TAP');
+                          logFirebaseEvent('Button_auth');
                           GoRouter.of(context).prepareAuthEvent();
                           await authManager.signOut();
                           GoRouter.of(context).clearRedirectLocation();

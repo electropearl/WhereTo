@@ -28,6 +28,7 @@ class _SuccessWidgetState extends State<SuccessWidget> {
     super.initState();
     _model = createModel(context, () => SuccessModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'success'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -132,6 +133,9 @@ class _SuccessWidgetState extends State<SuccessWidget> {
                   ),
                   FFButtonWidget(
                     onPressed: () async {
+                      logFirebaseEvent('SUCCESS_PAGE_CONTINUE_BTN_ON_TAP');
+                      logFirebaseEvent('Button_navigate_to');
+
                       context.goNamed(HomeWidget.routeName);
                     },
                     text: 'Continue',

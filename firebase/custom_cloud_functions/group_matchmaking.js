@@ -11,21 +11,23 @@ exports.groupMatchmaking = functions.firestore
     const before = change.before.data();
     const after = change.after.data();
 
-    const prevGroups = before.groupsHereNow || [];
-    const currGroups = after.groupsHereNow || [];
+    const prevRefs = before.groupsHereNow || [];
+    const currRefs = after.groupsHereNow || [];
 
-    const newGroups = currGroups.filter((id) => !prevGroups.includes(id));
-    if (newGroups.length === 0) return;
+    const prevPaths = prevRefs.map((ref) => ref.path);
+    const currPaths = currRefs.map((ref) => ref.path);
 
-    const groupDocs = await Promise.all(
-      currGroups.map((groupId) => db.doc(`groups/${groupId}`).get()),
-    );
+    const newRefs = currRefs.filter((ref) => !prevPaths.includes(ref.path));
+    if (newRefs.length === 0) return;
+
+    const groupDocs = await Promise.all(currRefs.map((ref) => ref.get()));
 
     const allGroups = groupDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    const venueSize = currGroups.length;
+    const venueSize = currRefs.length;
 
-    for (const newGroupId of newGroups) {
-      const newGroup = allGroups.find((g) => g.id === newGroupId);
+    for (const newRef of newRefs) {
+      const newGroupDoc = await newRef.get();
+      const newGroup = { id: newGroupDoc.id, ...newGroupDoc.data() };
       if (!newGroup || !newGroup.interests || !newGroup.createdAt) continue;
 
       const minutesSinceArrival =
@@ -40,8 +42,8 @@ exports.groupMatchmaking = functions.firestore
 
       const candidates = allGroups.filter((candidate) => {
         return (
-          candidate.id !== newGroupId &&
-          !candidate.matchedWith?.includes(newGroupId) &&
+          candidate.id !== newGroup.id &&
+          !candidate.matchedWith?.includes(newGroup.id) &&
           !newGroup.matchedWith?.includes(candidate.id)
         );
       });
@@ -49,30 +51,30 @@ exports.groupMatchmaking = functions.firestore
       let bestMatch = null;
       let bestScore = 0;
 
-      for (const group of candidates) {
+      for (const candidate of candidates) {
         const shared = newGroup.interests.filter((i) =>
-          group.interests?.includes(i),
+          candidate.interests?.includes(i),
         );
         const total = new Set([
           ...newGroup.interests,
-          ...(group.interests || []),
+          ...(candidate.interests || []),
         ]).size;
 
         const score = shared.length / total;
         const adjustedScore =
           score +
-          (group.subscription ? 0.05 : 0) +
+          (candidate.subscription ? 0.05 : 0) +
           (newGroup.subscription ? 0.05 : 0);
 
         if (adjustedScore > bestScore && adjustedScore >= threshold) {
           bestScore = adjustedScore;
-          bestMatch = group;
+          bestMatch = candidate;
         }
       }
 
       if (bestMatch) {
         await db.collection("matches").add({
-          groupAId: db.doc(`groups/${newGroupId}`),
+          groupAId: db.doc(`groups/${newGroup.id}`),
           groupBId: db.doc(`groups/${bestMatch.id}`),
           venueId: db.doc(`venues/${venueId}`),
           groupAName: newGroup.name || "",
@@ -82,15 +84,15 @@ exports.groupMatchmaking = functions.firestore
           matchStrength: bestScore,
           priorityGivenTo:
             newGroup.subscription && !bestMatch.subscription
-              ? newGroupId
+              ? newGroup.id
               : bestMatch.id,
         });
 
-        await db.doc(`groups/${newGroupId}`).update({
+        await db.doc(`groups/${newGroup.id}`).update({
           matchedWith: admin.firestore.FieldValue.arrayUnion(bestMatch.id),
         });
         await db.doc(`groups/${bestMatch.id}`).update({
-          matchedWith: admin.firestore.FieldValue.arrayUnion(newGroupId),
+          matchedWith: admin.firestore.FieldValue.arrayUnion(newGroup.id),
         });
       }
     }

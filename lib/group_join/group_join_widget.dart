@@ -42,6 +42,7 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
     super.initState();
     _model = createModel(context, () => GroupJoinModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'GroupJoin'});
     _model.textController ??= TextEditingController();
     _model.textFieldFocusNode ??= FocusNode();
 
@@ -82,6 +83,8 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
                   size: 24.0,
                 ),
                 onPressed: () async {
+                  logFirebaseEvent('GROUP_JOIN_arrow_back_rounded_ICN_ON_TAP');
+                  logFirebaseEvent('IconButton_navigate_back');
                   context.safePop();
                 },
               ),
@@ -116,6 +119,9 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
                         size: 24.0,
                       ),
                       onPressed: () async {
+                        logFirebaseEvent(
+                            'GROUP_JOIN_PAGE_help_outline_ICN_ON_TAP');
+                        logFirebaseEvent('IconButton_bottom_sheet');
                         await showModalBottomSheet(
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
@@ -425,6 +431,10 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
                                                 highlightColor:
                                                     Colors.transparent,
                                                 onTap: () async {
+                                                  logFirebaseEvent(
+                                                      'GROUP_JOIN_Container_ifk5jcj9_ON_TAP');
+                                                  logFirebaseEvent(
+                                                      'Container_bottom_sheet');
                                                   await showModalBottomSheet(
                                                     isScrollControlled: true,
                                                     backgroundColor:
@@ -457,6 +467,8 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
                                                       safeSetState(() => _model
                                                           .friends = value));
 
+                                                  logFirebaseEvent(
+                                                      'Container_update_page_state');
                                                   _model.friendsInvited = _model
                                                       .friends!
                                                       .toList()
@@ -1015,6 +1027,10 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
                         children: [
                           FFButtonWidget(
                             onPressed: () async {
+                              logFirebaseEvent(
+                                  'GROUP_JOIN_PAGE_CREATE_GROUP_BTN_ON_TAP');
+                              logFirebaseEvent('Button_backend_call');
+
                               var groupsRecordReference =
                                   GroupsRecord.collection.doc();
                               await groupsRecordReference.set({
@@ -1031,7 +1047,7 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
                                 ),
                                 ...mapToFirestore(
                                   {
-                                    'memberUserIds': _model.friendsInvited,
+                                    'memberUserIds': [currentUserReference],
                                     'groupVibe': _model.choiceChipsValues,
                                     'createdAt': FieldValue.serverTimestamp(),
                                   },
@@ -1051,7 +1067,7 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
                                 ),
                                 ...mapToFirestore(
                                   {
-                                    'memberUserIds': _model.friendsInvited,
+                                    'memberUserIds': [currentUserReference],
                                     'groupVibe': _model.choiceChipsValues,
                                     'createdAt': DateTime.now(),
                                   },
@@ -1061,11 +1077,12 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
                                   loop1Index <=
                                       valueOrDefault<int>(
                                         _model.friendsInvited.length,
-                                        1,
+                                        0,
                                       );
                                   loop1Index++) {
                                 final currentLoop1Item =
-                                    _model.friends![loop1Index];
+                                    _model.friendsInvited[loop1Index];
+                                logFirebaseEvent('Button_backend_call');
 
                                 await GroupInvitesRecord.collection.doc().set({
                                   ...createGroupInvitesRecordData(
@@ -1082,30 +1099,15 @@ class _GroupJoinWidgetState extends State<GroupJoinWidget> {
                                   ),
                                 });
                               }
-
-                              await _model.group!.reference.update({
-                                ...mapToFirestore(
-                                  {
-                                    'memberUserIds': FieldValue.arrayUnion(
-                                        [currentUserReference]),
-                                  },
-                                ),
-                              });
+                              logFirebaseEvent('Button_backend_call');
 
                               await currentUserReference!
                                   .update(createUsersRecordData(
                                 currentGroup: _model.group?.reference,
                               ));
+                              logFirebaseEvent('Button_navigate_to');
 
-                              context.goNamed(
-                                GroupWidget.routeName,
-                                queryParameters: {
-                                  'groupDetails': serializeParam(
-                                    _model.group?.reference,
-                                    ParamType.DocumentReference,
-                                  ),
-                                }.withoutNulls,
-                              );
+                              context.goNamed(GroupManagementWidget.routeName);
 
                               safeSetState(() {});
                             },

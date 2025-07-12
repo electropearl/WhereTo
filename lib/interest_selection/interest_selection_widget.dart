@@ -43,6 +43,8 @@ class _InterestSelectionWidgetState extends State<InterestSelectionWidget> {
     super.initState();
     _model = createModel(context, () => InterestSelectionModel());
 
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'interestSelection'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -306,6 +308,10 @@ class _InterestSelectionWidgetState extends State<InterestSelectionWidget> {
                       ),
                       FFButtonWidget(
                         onPressed: () async {
+                          logFirebaseEvent(
+                              'INTEREST_SELECTION_SAVE__CONTINUE_BTN_ON');
+                          logFirebaseEvent('Button_backend_call');
+
                           await currentUserReference!.update({
                             ...mapToFirestore(
                               {
@@ -313,6 +319,7 @@ class _InterestSelectionWidgetState extends State<InterestSelectionWidget> {
                               },
                             ),
                           });
+                          logFirebaseEvent('Button_navigate_to');
 
                           context.pushNamed(SeekingWidget.routeName);
                         },

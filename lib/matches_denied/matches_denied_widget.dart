@@ -31,6 +31,8 @@ class _MatchesDeniedWidgetState extends State<MatchesDeniedWidget> {
     super.initState();
     _model = createModel(context, () => MatchesDeniedModel());
 
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'matchesDenied'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 

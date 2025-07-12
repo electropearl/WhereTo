@@ -5,12 +5,15 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
     <uses-permission android:name="ACCESS_BACKGROUND_LOCATION"/>
     <uses-permission android:name="FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission."/>
+    <uses-permission android:name="android.permission."/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
-        android:label="Here Now"
+        android:label="Where 2"
         tools:replace="android:label"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">
@@ -50,7 +53,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="herenow" android:host="herenow.com" />
+                <data android:scheme="where2" android:host="where2.com" />
             </intent-filter>
 
         </activity>

@@ -110,6 +110,11 @@ class MatchesRecord extends FirestoreRecord {
   double get matchStrength => _matchStrength ?? 0.0;
   bool hasMatchStrength() => _matchStrength != null;
 
+  // "matched" field.
+  bool? _matched;
+  bool get matched => _matched ?? false;
+  bool hasMatched() => _matched != null;
+
   void _initializeFields() {
     _userAId = snapshotData['userAId'] as DocumentReference?;
     _userBId = snapshotData['userBId'] as DocumentReference?;
@@ -130,6 +135,7 @@ class MatchesRecord extends FirestoreRecord {
     _groupAName = snapshotData['groupAName'] as String?;
     _groupBName = snapshotData['groupBName'] as String?;
     _matchStrength = castToType<double>(snapshotData['matchStrength']);
+    _matched = snapshotData['matched'] as bool?;
   }
 
   static CollectionReference get collection =>
@@ -186,6 +192,7 @@ Map<String, dynamic> createMatchesRecordData({
   String? groupAName,
   String? groupBName,
   double? matchStrength,
+  bool? matched,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -208,6 +215,7 @@ Map<String, dynamic> createMatchesRecordData({
       'groupAName': groupAName,
       'groupBName': groupBName,
       'matchStrength': matchStrength,
+      'matched': matched,
     }.withoutNulls,
   );
 
@@ -237,7 +245,8 @@ class MatchesRecordDocumentEquality implements Equality<MatchesRecord> {
         e1?.userBName == e2?.userBName &&
         e1?.groupAName == e2?.groupAName &&
         e1?.groupBName == e2?.groupBName &&
-        e1?.matchStrength == e2?.matchStrength;
+        e1?.matchStrength == e2?.matchStrength &&
+        e1?.matched == e2?.matched;
   }
 
   @override
@@ -260,7 +269,8 @@ class MatchesRecordDocumentEquality implements Equality<MatchesRecord> {
         e?.userBName,
         e?.groupAName,
         e?.groupBName,
-        e?.matchStrength
+        e?.matchStrength,
+        e?.matched
       ]);
 
   @override

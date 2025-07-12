@@ -9,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'group_invite_model.dart';
 export 'group_invite_model.dart';
 
@@ -36,14 +37,20 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
     super.initState();
     _model = createModel(context, () => GroupInviteModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'GroupInvite'});
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      logFirebaseEvent('GROUP_INVITE_GroupInvite_ON_INIT_STATE');
+      logFirebaseEvent('GroupInvite_firestore_query');
       _model.invites = await queryGroupInvitesRecordOnce(
         queryBuilder: (groupInvitesRecord) => groupInvitesRecord.where(
           'recieverRef',
           isEqualTo: currentUserReference,
         ),
       );
+      logFirebaseEvent('GroupInvite_update_app_state');
+      FFAppState().showFullList = false;
+      safeSetState(() {});
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -58,6 +65,8 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return Title(
         title: 'GroupInvite',
         color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
@@ -83,6 +92,8 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
                   size: 30.0,
                 ),
                 onPressed: () async {
+                  logFirebaseEvent('GROUP_INVITE_arrow_back_rounded_ICN_ON_T');
+                  logFirebaseEvent('IconButton_navigate_back');
                   context.pop();
                 },
               ),
@@ -113,47 +124,61 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
             ),
             body: SafeArea(
               top: true,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).secondaryBackground,
-                    ),
-                    child: Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(
-                          16.0, 24.0, 16.0, 16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      16.0, 0.0, 16.0, 0.0),
-                                  child: Container(
-                                    width: 50.0,
-                                    height: 36.0,
-                                    decoration: BoxDecoration(
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      borderRadius: BorderRadius.circular(18.0),
-                                    ),
-                                    child: Align(
-                                      alignment: AlignmentDirectional(0.0, 0.0),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'All',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                font: GoogleFonts.inter(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: FlutterFlowTheme.of(context).secondaryBackground,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                            16.0, 24.0, 16.0, 16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        16.0, 0.0, 16.0, 0.0),
+                                    child: Container(
+                                      width: 50.0,
+                                      height: 36.0,
+                                      decoration: BoxDecoration(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primary,
+                                        borderRadius:
+                                            BorderRadius.circular(18.0),
+                                      ),
+                                      child: Align(
+                                        alignment:
+                                            AlignmentDirectional(0.0, 0.0),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'All',
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  font: GoogleFonts.inter(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .bodyMedium
+                                                            .fontStyle,
+                                                  ),
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .info,
+                                                  letterSpacing: 0.0,
                                                   fontWeight: FontWeight.w600,
                                                   fontStyle:
                                                       FlutterFlowTheme.of(
@@ -161,41 +186,44 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
                                                           .bodyMedium
                                                           .fontStyle,
                                                 ),
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .info,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w600,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .fontStyle,
-                                              ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      16.0, 0.0, 16.0, 0.0),
-                                  child: Container(
-                                    height: 36.0,
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowTheme.of(context)
-                                          .alternate,
-                                      borderRadius: BorderRadius.circular(18.0),
-                                    ),
-                                    child: Align(
-                                      alignment: AlignmentDirectional(0.0, 0.0),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Pending',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                font: GoogleFonts.inter(
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        16.0, 0.0, 16.0, 0.0),
+                                    child: Container(
+                                      height: 36.0,
+                                      decoration: BoxDecoration(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate,
+                                        borderRadius:
+                                            BorderRadius.circular(18.0),
+                                      ),
+                                      child: Align(
+                                        alignment:
+                                            AlignmentDirectional(0.0, 0.0),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'Pending',
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  font: GoogleFonts.inter(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .bodyMedium
+                                                            .fontStyle,
+                                                  ),
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  letterSpacing: 0.0,
                                                   fontWeight: FontWeight.w600,
                                                   fontStyle:
                                                       FlutterFlowTheme.of(
@@ -203,41 +231,44 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
                                                           .bodyMedium
                                                           .fontStyle,
                                                 ),
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .secondaryText,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w600,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .fontStyle,
-                                              ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      16.0, 0.0, 16.0, 0.0),
-                                  child: Container(
-                                    height: 36.0,
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowTheme.of(context)
-                                          .alternate,
-                                      borderRadius: BorderRadius.circular(18.0),
-                                    ),
-                                    child: Align(
-                                      alignment: AlignmentDirectional(0.0, 0.0),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Accepted',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                font: GoogleFonts.inter(
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        16.0, 0.0, 16.0, 0.0),
+                                    child: Container(
+                                      height: 36.0,
+                                      decoration: BoxDecoration(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate,
+                                        borderRadius:
+                                            BorderRadius.circular(18.0),
+                                      ),
+                                      child: Align(
+                                        alignment:
+                                            AlignmentDirectional(0.0, 0.0),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'Accepted',
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  font: GoogleFonts.inter(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .bodyMedium
+                                                            .fontStyle,
+                                                  ),
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  letterSpacing: 0.0,
                                                   fontWeight: FontWeight.w600,
                                                   fontStyle:
                                                       FlutterFlowTheme.of(
@@ -245,41 +276,44 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
                                                           .bodyMedium
                                                           .fontStyle,
                                                 ),
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .secondaryText,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w600,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .fontStyle,
-                                              ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      16.0, 0.0, 16.0, 0.0),
-                                  child: Container(
-                                    height: 36.0,
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowTheme.of(context)
-                                          .alternate,
-                                      borderRadius: BorderRadius.circular(18.0),
-                                    ),
-                                    child: Align(
-                                      alignment: AlignmentDirectional(0.0, 0.0),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Denied',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                font: GoogleFonts.inter(
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        16.0, 0.0, 16.0, 0.0),
+                                    child: Container(
+                                      height: 36.0,
+                                      decoration: BoxDecoration(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate,
+                                        borderRadius:
+                                            BorderRadius.circular(18.0),
+                                      ),
+                                      child: Align(
+                                        alignment:
+                                            AlignmentDirectional(0.0, 0.0),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'Denied',
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  font: GoogleFonts.inter(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .bodyMedium
+                                                            .fontStyle,
+                                                  ),
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  letterSpacing: 0.0,
                                                   fontWeight: FontWeight.w600,
                                                   fontStyle:
                                                       FlutterFlowTheme.of(
@@ -287,178 +321,222 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
                                                           .bodyMedium
                                                           .fontStyle,
                                                 ),
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .secondaryText,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w600,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .fontStyle,
-                                              ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ].divide(SizedBox(width: 12.0)),
+                                ].divide(SizedBox(width: 12.0)),
+                              ),
                             ),
-                          ),
-                        ].divide(SizedBox(height: 12.0)),
+                          ].divide(SizedBox(height: 12.0)),
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 16.0),
-                    child: Builder(
-                      builder: (context) {
-                        final invitesList = _model.invites?.toList() ?? [];
+                    Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(
+                          16.0, 16.0, 16.0, 16.0),
+                      child: Builder(
+                        builder: (context) {
+                          final invitesList = _model.invites?.toList() ?? [];
 
-                        return ListView.separated(
-                          padding: EdgeInsets.zero,
-                          shrinkWrap: true,
-                          scrollDirection: Axis.vertical,
-                          itemCount: invitesList.length,
-                          separatorBuilder: (_, __) => SizedBox(height: 12.0),
-                          itemBuilder: (context, invitesListIndex) {
-                            final invitesListItem =
-                                invitesList[invitesListIndex];
-                            return StreamBuilder<GroupInvitesRecord>(
-                              stream: GroupInvitesRecord.getDocument(
-                                  invitesListItem.reference),
-                              builder: (context, snapshot) {
-                                // Customize what your widget looks like when it's loading.
-                                if (!snapshot.hasData) {
-                                  return Center(
-                                    child: SizedBox(
-                                      width: 50.0,
-                                      height: 50.0,
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                          FlutterFlowTheme.of(context).primary,
+                          return ListView.separated(
+                            padding: EdgeInsets.zero,
+                            primary: false,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: invitesList.length,
+                            separatorBuilder: (_, __) => SizedBox(height: 12.0),
+                            itemBuilder: (context, invitesListIndex) {
+                              final invitesListItem =
+                                  invitesList[invitesListIndex];
+                              return StreamBuilder<GroupInvitesRecord>(
+                                stream: GroupInvitesRecord.getDocument(
+                                    invitesListItem.reference),
+                                builder: (context, snapshot) {
+                                  // Customize what your widget looks like when it's loading.
+                                  if (!snapshot.hasData) {
+                                    return Center(
+                                      child: SizedBox(
+                                        width: 50.0,
+                                        height: 50.0,
+                                        child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                            FlutterFlowTheme.of(context)
+                                                .primary,
+                                          ),
                                         ),
                                       ),
+                                    );
+                                  }
+
+                                  final containerGroupInvitesRecord =
+                                      snapshot.data!;
+
+                                  return Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      border: Border.all(
+                                        color: () {
+                                          if (containerGroupInvitesRecord
+                                                  .status ==
+                                              'denied') {
+                                            return FlutterFlowTheme.of(context)
+                                                .secondary;
+                                          } else if (containerGroupInvitesRecord
+                                                  .status ==
+                                              'pending') {
+                                            return FlutterFlowTheme.of(context)
+                                                .warning;
+                                          } else if (containerGroupInvitesRecord
+                                                  .status ==
+                                              'accepted') {
+                                            return FlutterFlowTheme.of(context)
+                                                .success;
+                                          } else {
+                                            return Color(0x00000000);
+                                          }
+                                        }(),
+                                        width: 1.0,
+                                      ),
                                     ),
-                                  );
-                                }
-
-                                final containerGroupInvitesRecord =
-                                    snapshot.data!;
-
-                                return Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryBackground,
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    border: Border.all(
-                                      color: () {
-                                        if (containerGroupInvitesRecord
-                                                .status ==
-                                            'denied') {
-                                          return FlutterFlowTheme.of(context)
-                                              .secondary;
-                                        } else if (containerGroupInvitesRecord
-                                                .status ==
-                                            'pending') {
-                                          return FlutterFlowTheme.of(context)
-                                              .warning;
-                                        } else if (containerGroupInvitesRecord
-                                                .status ==
-                                            'accepted') {
-                                          return FlutterFlowTheme.of(context)
-                                              .success;
-                                        } else {
-                                          return Color(0x00000000);
-                                        }
-                                      }(),
-                                      width: 1.0,
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(16.0),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Stack(
-                                          children: [
-                                            StreamBuilder<UsersRecord>(
-                                              stream: UsersRecord.getDocument(
-                                                  invitesListItem.senderRef!),
-                                              builder: (context, snapshot) {
-                                                // Customize what your widget looks like when it's loading.
-                                                if (!snapshot.hasData) {
-                                                  return Center(
-                                                    child: SizedBox(
-                                                      width: 50.0,
-                                                      height: 50.0,
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                                Color>(
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primary,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-
-                                                final imageUsersRecord =
-                                                    snapshot.data!;
-
-                                                return ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          30.0),
-                                                  child: CachedNetworkImage(
-                                                    fadeInDuration: Duration(
-                                                        milliseconds: 0),
-                                                    fadeOutDuration: Duration(
-                                                        milliseconds: 0),
-                                                    imageUrl: imageUsersRecord
-                                                        .photoUrl,
-                                                    width: 60.0,
-                                                    height: 60.0,
-                                                    fit: BoxFit.cover,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(16.0),
+                                      child: StreamBuilder<GroupsRecord>(
+                                        stream: GroupsRecord.getDocument(
+                                            containerGroupInvitesRecord
+                                                .groupRef!),
+                                        builder: (context, snapshot) {
+                                          // Customize what your widget looks like when it's loading.
+                                          if (!snapshot.hasData) {
+                                            return Center(
+                                              child: SizedBox(
+                                                width: 50.0,
+                                                height: 50.0,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(
+                                                    FlutterFlowTheme.of(context)
+                                                        .primary,
                                                   ),
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                        Expanded(
-                                          child: Column(
+                                                ),
+                                              ),
+                                            );
+                                          }
+
+                                          final rowGroupsRecord =
+                                              snapshot.data!;
+
+                                          return Row(
                                             mainAxisSize: MainAxisSize.max,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
                                             children: [
-                                              Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                              Stack(
                                                 children: [
-                                                  Stack(
-                                                    children: [
-                                                      Text(
-                                                        valueOrDefault<String>(
-                                                          containerGroupInvitesRecord
-                                                              .groupName,
-                                                          'Name',
+                                                  StreamBuilder<UsersRecord>(
+                                                    stream:
+                                                        UsersRecord.getDocument(
+                                                            invitesListItem
+                                                                .senderRef!),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      // Customize what your widget looks like when it's loading.
+                                                      if (!snapshot.hasData) {
+                                                        return Center(
+                                                          child: SizedBox(
+                                                            width: 50.0,
+                                                            height: 50.0,
+                                                            child:
+                                                                CircularProgressIndicator(
+                                                              valueColor:
+                                                                  AlwaysStoppedAnimation<
+                                                                      Color>(
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primary,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+
+                                                      final imageUsersRecord =
+                                                          snapshot.data!;
+
+                                                      return ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(30.0),
+                                                        child:
+                                                            CachedNetworkImage(
+                                                          fadeInDuration:
+                                                              Duration(
+                                                                  milliseconds:
+                                                                      0),
+                                                          fadeOutDuration:
+                                                              Duration(
+                                                                  milliseconds:
+                                                                      0),
+                                                          imageUrl:
+                                                              valueOrDefault<
+                                                                  String>(
+                                                            imageUsersRecord
+                                                                .photoUrl,
+                                                            'https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/where-to-b7e849/assets/hn810omect9i/transparent_where_to_variant_4.png',
+                                                          ),
+                                                          width: 60.0,
+                                                          height: 60.0,
+                                                          fit: BoxFit.cover,
                                                         ),
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .titleMedium
-                                                                .override(
-                                                                  font: GoogleFonts
-                                                                      .interTight(
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                              Expanded(
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Stack(
+                                                          children: [
+                                                            Text(
+                                                              valueOrDefault<
+                                                                  String>(
+                                                                containerGroupInvitesRecord
+                                                                    .groupName,
+                                                                'Name',
+                                                              ),
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .titleMedium
+                                                                  .override(
+                                                                    font: GoogleFonts
+                                                                        .interTight(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600,
+                                                                      fontStyle: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .titleMedium
+                                                                          .fontStyle,
+                                                                    ),
+                                                                    letterSpacing:
+                                                                        0.0,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w600,
@@ -467,383 +545,357 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
                                                                         .titleMedium
                                                                         .fontStyle,
                                                                   ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Stack(
+                                                          children: [
+                                                            if (containerGroupInvitesRecord
+                                                                    .status ==
+                                                                'pending')
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            8.0,
+                                                                            0.0,
+                                                                            8.0,
+                                                                            0.0),
+                                                                child:
+                                                                    Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .warning,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            12.0),
+                                                                  ),
+                                                                  child: Align(
+                                                                    alignment:
+                                                                        AlignmentDirectional(
+                                                                            0.0,
+                                                                            0.0),
+                                                                    child:
+                                                                        Padding(
+                                                                      padding:
+                                                                          EdgeInsets.all(
+                                                                              8.0),
+                                                                      child:
+                                                                          Text(
+                                                                        'Pending',
+                                                                        style: FlutterFlowTheme.of(context)
+                                                                            .bodySmall
+                                                                            .override(
+                                                                              font: GoogleFonts.inter(
+                                                                                fontWeight: FontWeight.w600,
+                                                                                fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                              ),
+                                                                              color: FlutterFlowTheme.of(context).primaryBackground,
+                                                                              fontSize: 12.0,
+                                                                              letterSpacing: 0.0,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                            ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            if (containerGroupInvitesRecord
+                                                                    .status ==
+                                                                'accepted')
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            8.0,
+                                                                            0.0,
+                                                                            8.0,
+                                                                            0.0),
+                                                                child:
+                                                                    Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .success,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            12.0),
+                                                                  ),
+                                                                  child: Align(
+                                                                    alignment:
+                                                                        AlignmentDirectional(
+                                                                            0.0,
+                                                                            0.0),
+                                                                    child:
+                                                                        Padding(
+                                                                      padding:
+                                                                          EdgeInsets.all(
+                                                                              8.0),
+                                                                      child:
+                                                                          Text(
+                                                                        'Accepted',
+                                                                        style: FlutterFlowTheme.of(context)
+                                                                            .bodySmall
+                                                                            .override(
+                                                                              font: GoogleFonts.inter(
+                                                                                fontWeight: FontWeight.w600,
+                                                                                fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                              ),
+                                                                              color: FlutterFlowTheme.of(context).info,
+                                                                              fontSize: 12.0,
+                                                                              letterSpacing: 0.0,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                            ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            if (containerGroupInvitesRecord
+                                                                    .status ==
+                                                                'new')
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            8.0,
+                                                                            0.0,
+                                                                            8.0,
+                                                                            0.0),
+                                                                child:
+                                                                    Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: Color(
+                                                                        0xFFCA06F5),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            12.0),
+                                                                  ),
+                                                                  child: Align(
+                                                                    alignment:
+                                                                        AlignmentDirectional(
+                                                                            0.0,
+                                                                            0.0),
+                                                                    child:
+                                                                        Padding(
+                                                                      padding:
+                                                                          EdgeInsets.all(
+                                                                              8.0),
+                                                                      child:
+                                                                          Text(
+                                                                        'New',
+                                                                        style: FlutterFlowTheme.of(context)
+                                                                            .bodySmall
+                                                                            .override(
+                                                                              font: GoogleFonts.inter(
+                                                                                fontWeight: FontWeight.w600,
+                                                                                fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                              ),
+                                                                              color: FlutterFlowTheme.of(context).info,
+                                                                              fontSize: 12.0,
+                                                                              letterSpacing: 0.0,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                            ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            if (containerGroupInvitesRecord
+                                                                    .status ==
+                                                                'denied')
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            8.0,
+                                                                            0.0,
+                                                                            8.0,
+                                                                            0.0),
+                                                                child:
+                                                                    Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .error,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            12.0),
+                                                                  ),
+                                                                  child: Align(
+                                                                    alignment:
+                                                                        AlignmentDirectional(
+                                                                            0.0,
+                                                                            0.0),
+                                                                    child:
+                                                                        Padding(
+                                                                      padding:
+                                                                          EdgeInsets.all(
+                                                                              8.0),
+                                                                      child:
+                                                                          Text(
+                                                                        'Denied',
+                                                                        style: FlutterFlowTheme.of(context)
+                                                                            .bodySmall
+                                                                            .override(
+                                                                              font: GoogleFonts.inter(
+                                                                                fontWeight: FontWeight.w600,
+                                                                                fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                              ),
+                                                                              color: FlutterFlowTheme.of(context).info,
+                                                                              fontSize: 12.0,
+                                                                              letterSpacing: 0.0,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                            ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    RichText(
+                                                      textScaler:
+                                                          MediaQuery.of(context)
+                                                              .textScaler,
+                                                      text: TextSpan(
+                                                        children: [
+                                                          TextSpan(
+                                                            text: 'Matched ',
+                                                            style: TextStyle(),
+                                                          ),
+                                                          TextSpan(
+                                                            text: dateTimeFormat(
+                                                                "relative",
+                                                                invitesListItem
+                                                                    .timestamp!),
+                                                            style: TextStyle(),
+                                                          )
+                                                        ],
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodySmall
+                                                                .override(
+                                                                  font:
+                                                                      GoogleFonts
+                                                                          .inter(
+                                                                    fontWeight: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodySmall
+                                                                        .fontWeight,
+                                                                    fontStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodySmall
+                                                                        .fontStyle,
+                                                                  ),
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .secondaryText,
+                                                                  fontSize:
+                                                                      12.0,
                                                                   letterSpacing:
                                                                       0.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
+                                                                  fontWeight: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodySmall
+                                                                      .fontWeight,
                                                                   fontStyle: FlutterFlowTheme.of(
                                                                           context)
-                                                                      .titleMedium
+                                                                      .bodySmall
                                                                       .fontStyle,
                                                                 ),
                                                       ),
-                                                    ],
-                                                  ),
-                                                  Stack(
-                                                    children: [
-                                                      if (containerGroupInvitesRecord
-                                                              .status ==
-                                                          'pending')
-                                                        Padding(
-                                                          padding:
-                                                              EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      8.0,
-                                                                      0.0,
-                                                                      8.0,
-                                                                      0.0),
-                                                          child: Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .warning,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          12.0),
-                                                            ),
-                                                            child: Align(
-                                                              alignment:
-                                                                  AlignmentDirectional(
-                                                                      0.0, 0.0),
-                                                              child: Padding(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(
-                                                                            8.0),
-                                                                child: Text(
-                                                                  'Pending',
-                                                                  style: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .override(
-                                                                        font: GoogleFonts
-                                                                            .inter(
-                                                                          fontWeight:
-                                                                              FontWeight.w600,
-                                                                          fontStyle: FlutterFlowTheme.of(context)
-                                                                              .bodySmall
-                                                                              .fontStyle,
-                                                                        ),
-                                                                        color: FlutterFlowTheme.of(context)
-                                                                            .primaryBackground,
-                                                                        fontSize:
-                                                                            12.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight:
-                                                                            FontWeight.w600,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodySmall
-                                                                            .fontStyle,
-                                                                      ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      if (containerGroupInvitesRecord
-                                                              .status ==
-                                                          'accepted')
-                                                        Padding(
-                                                          padding:
-                                                              EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      8.0,
-                                                                      0.0,
-                                                                      8.0,
-                                                                      0.0),
-                                                          child: Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .success,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          12.0),
-                                                            ),
-                                                            child: Align(
-                                                              alignment:
-                                                                  AlignmentDirectional(
-                                                                      0.0, 0.0),
-                                                              child: Padding(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(
-                                                                            8.0),
-                                                                child: Text(
-                                                                  'Accepted',
-                                                                  style: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .override(
-                                                                        font: GoogleFonts
-                                                                            .inter(
-                                                                          fontWeight:
-                                                                              FontWeight.w600,
-                                                                          fontStyle: FlutterFlowTheme.of(context)
-                                                                              .bodySmall
-                                                                              .fontStyle,
-                                                                        ),
-                                                                        color: FlutterFlowTheme.of(context)
-                                                                            .info,
-                                                                        fontSize:
-                                                                            12.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight:
-                                                                            FontWeight.w600,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodySmall
-                                                                            .fontStyle,
-                                                                      ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      if (containerGroupInvitesRecord
-                                                              .status ==
-                                                          'new')
-                                                        Padding(
-                                                          padding:
-                                                              EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      8.0,
-                                                                      0.0,
-                                                                      8.0,
-                                                                      0.0),
-                                                          child: Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: Color(
-                                                                  0xFFCA06F5),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          12.0),
-                                                            ),
-                                                            child: Align(
-                                                              alignment:
-                                                                  AlignmentDirectional(
-                                                                      0.0, 0.0),
-                                                              child: Padding(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(
-                                                                            8.0),
-                                                                child: Text(
-                                                                  'New',
-                                                                  style: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .override(
-                                                                        font: GoogleFonts
-                                                                            .inter(
-                                                                          fontWeight:
-                                                                              FontWeight.w600,
-                                                                          fontStyle: FlutterFlowTheme.of(context)
-                                                                              .bodySmall
-                                                                              .fontStyle,
-                                                                        ),
-                                                                        color: FlutterFlowTheme.of(context)
-                                                                            .info,
-                                                                        fontSize:
-                                                                            12.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight:
-                                                                            FontWeight.w600,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodySmall
-                                                                            .fontStyle,
-                                                                      ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      if (containerGroupInvitesRecord
-                                                              .status ==
-                                                          'denied')
-                                                        Padding(
-                                                          padding:
-                                                              EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      8.0,
-                                                                      0.0,
-                                                                      8.0,
-                                                                      0.0),
-                                                          child: Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .error,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          12.0),
-                                                            ),
-                                                            child: Align(
-                                                              alignment:
-                                                                  AlignmentDirectional(
-                                                                      0.0, 0.0),
-                                                              child: Padding(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(
-                                                                            8.0),
-                                                                child: Text(
-                                                                  'Denied',
-                                                                  style: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .override(
-                                                                        font: GoogleFonts
-                                                                            .inter(
-                                                                          fontWeight:
-                                                                              FontWeight.w600,
-                                                                          fontStyle: FlutterFlowTheme.of(context)
-                                                                              .bodySmall
-                                                                              .fontStyle,
-                                                                        ),
-                                                                        color: FlutterFlowTheme.of(context)
-                                                                            .info,
-                                                                        fontSize:
-                                                                            12.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight:
-                                                                            FontWeight.w600,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodySmall
-                                                                            .fontStyle,
-                                                                      ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                              RichText(
-                                                textScaler:
-                                                    MediaQuery.of(context)
-                                                        .textScaler,
-                                                text: TextSpan(
-                                                  children: [
-                                                    TextSpan(
-                                                      text: 'Matched ',
-                                                      style: TextStyle(),
                                                     ),
-                                                    TextSpan(
-                                                      text: dateTimeFormat(
-                                                          "relative",
-                                                          invitesListItem
-                                                              .timestamp!),
-                                                      style: TextStyle(),
-                                                    )
-                                                  ],
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .bodySmall
-                                                      .override(
-                                                        font: GoogleFonts.inter(
-                                                          fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodySmall
-                                                                  .fontWeight,
-                                                          fontStyle:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodySmall
-                                                                  .fontStyle,
-                                                        ),
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .secondaryText,
-                                                        fontSize: 12.0,
-                                                        letterSpacing: 0.0,
-                                                        fontWeight:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodySmall
-                                                                .fontWeight,
-                                                        fontStyle:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodySmall
-                                                                .fontStyle,
-                                                      ),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsetsDirectional
-                                                    .fromSTEB(
-                                                        0.0, 5.0, 0.0, 0.0),
-                                                child: Stack(
-                                                  children: [
-                                                    if ((containerGroupInvitesRecord
-                                                                .status ==
-                                                            'pending') ||
-                                                        (invitesListItem
-                                                                .status ==
-                                                            'new'))
-                                                      Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .end,
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsetsDirectional
+                                                              .fromSTEB(
+                                                                  0.0,
+                                                                  5.0,
+                                                                  0.0,
+                                                                  0.0),
+                                                      child: Stack(
                                                         children: [
-                                                          FFButtonWidget(
-                                                            onPressed:
-                                                                () async {
-                                                              await invitesListItem
-                                                                  .reference
-                                                                  .update(
-                                                                      createGroupInvitesRecordData(
-                                                                status:
-                                                                    'denied',
-                                                              ));
-                                                            },
-                                                            text: 'Decline',
-                                                            options:
-                                                                FFButtonOptions(
-                                                              height: 32.0,
-                                                              padding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          16.0,
-                                                                          0.0,
-                                                                          16.0,
-                                                                          0.0),
-                                                              iconPadding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0),
-                                                              color: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .primaryBackground,
-                                                              textStyle:
-                                                                  FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMedium
-                                                                      .override(
-                                                                        font: GoogleFonts
-                                                                            .inter(
+                                                          if ((containerGroupInvitesRecord
+                                                                      .status ==
+                                                                  'pending') ||
+                                                              (invitesListItem
+                                                                      .status ==
+                                                                  'new'))
+                                                            Row(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .max,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                FFButtonWidget(
+                                                                  onPressed:
+                                                                      () async {
+                                                                    logFirebaseEvent(
+                                                                        'GROUP_INVITE_PAGE_DECLINE_BTN_ON_TAP');
+                                                                    logFirebaseEvent(
+                                                                        'Button_backend_call');
+
+                                                                    await invitesListItem
+                                                                        .reference
+                                                                        .update(
+                                                                            createGroupInvitesRecordData(
+                                                                      status:
+                                                                          'denied',
+                                                                    ));
+                                                                  },
+                                                                  text:
+                                                                      'Decline',
+                                                                  options:
+                                                                      FFButtonOptions(
+                                                                    height:
+                                                                        32.0,
+                                                                    padding: EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            16.0,
+                                                                            0.0,
+                                                                            16.0,
+                                                                            0.0),
+                                                                    iconPadding:
+                                                                        EdgeInsetsDirectional.fromSTEB(
+                                                                            0.0,
+                                                                            0.0,
+                                                                            0.0,
+                                                                            0.0),
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primaryBackground,
+                                                                    textStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodyMedium
+                                                                        .override(
+                                                                          font:
+                                                                              GoogleFonts.inter(
+                                                                            fontWeight:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                            fontStyle:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                          ),
+                                                                          color:
+                                                                              FlutterFlowTheme.of(context).error,
+                                                                          fontSize:
+                                                                              14.0,
+                                                                          letterSpacing:
+                                                                              0.0,
                                                                           fontWeight: FlutterFlowTheme.of(context)
                                                                               .bodyMedium
                                                                               .fontWeight,
@@ -851,219 +903,90 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
                                                                               .bodyMedium
                                                                               .fontStyle,
                                                                         ),
-                                                                        color: FlutterFlowTheme.of(context)
-                                                                            .error,
-                                                                        fontSize:
-                                                                            14.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontWeight,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontStyle,
-                                                                      ),
-                                                              elevation: 0.0,
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                color: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .error,
-                                                                width: 1.0,
-                                                              ),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          20.0),
-                                                            ),
-                                                          ),
-                                                          FFButtonWidget(
-                                                            onPressed:
-                                                                () async {
-                                                              await invitesListItem
-                                                                  .reference
-                                                                  .update(
-                                                                      createGroupInvitesRecordData(
-                                                                status:
-                                                                    'accepted',
-                                                              ));
-                                                            },
-                                                            text: 'Accept',
-                                                            options:
-                                                                FFButtonOptions(
-                                                              height: 32.0,
-                                                              padding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          16.0,
-                                                                          0.0,
-                                                                          16.0,
-                                                                          0.0),
-                                                              iconPadding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0),
-                                                              color: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .primary,
-                                                              textStyle:
-                                                                  FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMedium
-                                                                      .override(
-                                                                        font: GoogleFonts
-                                                                            .inter(
-                                                                          fontWeight: FlutterFlowTheme.of(context)
-                                                                              .bodyMedium
-                                                                              .fontWeight,
-                                                                          fontStyle: FlutterFlowTheme.of(context)
-                                                                              .bodyMedium
-                                                                              .fontStyle,
-                                                                        ),
-                                                                        color: FlutterFlowTheme.of(context)
-                                                                            .info,
-                                                                        fontSize:
-                                                                            14.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontWeight,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontStyle,
-                                                                      ),
-                                                              elevation: 0.0,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          20.0),
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(
-                                                            width: 8.0)),
-                                                      ),
-                                                    if (containerGroupInvitesRecord
-                                                            .status ==
-                                                        'accepted')
-                                                      Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          FFButtonWidget(
-                                                            onPressed: () {
-                                                              print(
-                                                                  'Button pressed ...');
-                                                            },
-                                                            text: 'Message',
-                                                            options:
-                                                                FFButtonOptions(
-                                                              height: 32.0,
-                                                              padding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          20.0,
-                                                                          0.0,
-                                                                          20.0,
-                                                                          0.0),
-                                                              iconPadding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0),
-                                                              color: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .primary,
-                                                              textStyle:
-                                                                  FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMedium
-                                                                      .override(
-                                                                        font: GoogleFonts
-                                                                            .inter(
-                                                                          fontWeight: FlutterFlowTheme.of(context)
-                                                                              .bodyMedium
-                                                                              .fontWeight,
-                                                                          fontStyle: FlutterFlowTheme.of(context)
-                                                                              .bodyMedium
-                                                                              .fontStyle,
-                                                                        ),
-                                                                        color: FlutterFlowTheme.of(context)
-                                                                            .info,
-                                                                        fontSize:
-                                                                            14.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontWeight,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontStyle,
-                                                                      ),
-                                                              elevation: 0.0,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          20.0),
-                                                            ),
-                                                          ),
-                                                          FFButtonWidget(
-                                                            onPressed:
-                                                                () async {
-                                                              context.pushNamed(
-                                                                GroupWidget
-                                                                    .routeName,
-                                                                queryParameters:
-                                                                    {
-                                                                  'groupDetails':
-                                                                      serializeParam(
-                                                                    invitesListItem
-                                                                        .groupRef,
-                                                                    ParamType
-                                                                        .DocumentReference,
+                                                                    elevation:
+                                                                        0.0,
+                                                                    borderSide:
+                                                                        BorderSide(
+                                                                      color: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .error,
+                                                                      width:
+                                                                          1.0,
+                                                                    ),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            20.0),
                                                                   ),
-                                                                }.withoutNulls,
-                                                              );
-                                                            },
-                                                            text:
-                                                                'View Profile',
-                                                            options:
-                                                                FFButtonOptions(
-                                                              height: 32.0,
-                                                              padding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          16.0,
-                                                                          0.0,
-                                                                          16.0,
-                                                                          0.0),
-                                                              iconPadding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0),
-                                                              color: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .primaryBackground,
-                                                              textStyle:
-                                                                  FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMedium
-                                                                      .override(
-                                                                        font: GoogleFonts
-                                                                            .inter(
+                                                                ),
+                                                                FFButtonWidget(
+                                                                  onPressed:
+                                                                      () async {
+                                                                    logFirebaseEvent(
+                                                                        'GROUP_INVITE_PAGE_ACCEPT_BTN_ON_TAP');
+                                                                    logFirebaseEvent(
+                                                                        'Button_backend_call');
+
+                                                                    await invitesListItem
+                                                                        .reference
+                                                                        .update(
+                                                                            createGroupInvitesRecordData(
+                                                                      status:
+                                                                          'accepted',
+                                                                    ));
+                                                                    logFirebaseEvent(
+                                                                        'Button_backend_call');
+
+                                                                    await rowGroupsRecord
+                                                                        .reference
+                                                                        .update({
+                                                                      ...mapToFirestore(
+                                                                        {
+                                                                          'memberUserIds':
+                                                                              FieldValue.arrayUnion([
+                                                                            currentUserReference
+                                                                          ]),
+                                                                        },
+                                                                      ),
+                                                                    });
+                                                                  },
+                                                                  text:
+                                                                      'Accept',
+                                                                  options:
+                                                                      FFButtonOptions(
+                                                                    height:
+                                                                        32.0,
+                                                                    padding: EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            16.0,
+                                                                            0.0,
+                                                                            16.0,
+                                                                            0.0),
+                                                                    iconPadding:
+                                                                        EdgeInsetsDirectional.fromSTEB(
+                                                                            0.0,
+                                                                            0.0,
+                                                                            0.0,
+                                                                            0.0),
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primary,
+                                                                    textStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodyMedium
+                                                                        .override(
+                                                                          font:
+                                                                              GoogleFonts.inter(
+                                                                            fontWeight:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                            fontStyle:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                          ),
+                                                                          color:
+                                                                              FlutterFlowTheme.of(context).info,
+                                                                          fontSize:
+                                                                              14.0,
+                                                                          letterSpacing:
+                                                                              0.0,
                                                                           fontWeight: FlutterFlowTheme.of(context)
                                                                               .bodyMedium
                                                                               .fontWeight,
@@ -1071,81 +994,71 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
                                                                               .bodyMedium
                                                                               .fontStyle,
                                                                         ),
-                                                                        color: FlutterFlowTheme.of(context)
-                                                                            .primaryText,
-                                                                        fontSize:
-                                                                            14.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontWeight,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontStyle,
-                                                                      ),
-                                                              elevation: 0.0,
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                color: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .alternate,
-                                                                width: 1.0,
-                                                              ),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          20.0),
+                                                                    elevation:
+                                                                        0.0,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            20.0),
+                                                                  ),
+                                                                ),
+                                                              ].divide(SizedBox(
+                                                                  width: 8.0)),
                                                             ),
-                                                          ),
-                                                        ].divide(SizedBox(
-                                                            width: 8.0)),
-                                                      ),
-                                                    if (containerGroupInvitesRecord
-                                                            .status ==
-                                                        'denied')
-                                                      Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          FFButtonWidget(
-                                                            onPressed:
-                                                                () async {
-                                                              await invitesListItem
-                                                                  .reference
-                                                                  .delete();
-                                                            },
-                                                            text: 'Remove',
-                                                            options:
-                                                                FFButtonOptions(
-                                                              height: 32.0,
-                                                              padding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          16.0,
-                                                                          0.0,
-                                                                          16.0,
-                                                                          0.0),
-                                                              iconPadding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0),
-                                                              color: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .primaryBackground,
-                                                              textStyle:
-                                                                  FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMedium
-                                                                      .override(
-                                                                        font: GoogleFonts
-                                                                            .inter(
+                                                          if (containerGroupInvitesRecord
+                                                                  .status ==
+                                                              'accepted')
+                                                            Row(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .max,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                FFButtonWidget(
+                                                                  onPressed:
+                                                                      () {
+                                                                    print(
+                                                                        'Button pressed ...');
+                                                                  },
+                                                                  text:
+                                                                      'Message',
+                                                                  options:
+                                                                      FFButtonOptions(
+                                                                    height:
+                                                                        32.0,
+                                                                    padding: EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            20.0,
+                                                                            0.0,
+                                                                            20.0,
+                                                                            0.0),
+                                                                    iconPadding:
+                                                                        EdgeInsetsDirectional.fromSTEB(
+                                                                            0.0,
+                                                                            0.0,
+                                                                            0.0,
+                                                                            0.0),
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primary,
+                                                                    textStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodyMedium
+                                                                        .override(
+                                                                          font:
+                                                                              GoogleFonts.inter(
+                                                                            fontWeight:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                            fontStyle:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                          ),
+                                                                          color:
+                                                                              FlutterFlowTheme.of(context).info,
+                                                                          fontSize:
+                                                                              14.0,
+                                                                          letterSpacing:
+                                                                              0.0,
                                                                           fontWeight: FlutterFlowTheme.of(context)
                                                                               .bodyMedium
                                                                               .fontWeight,
@@ -1153,54 +1066,207 @@ class _GroupInviteWidgetState extends State<GroupInviteWidget> {
                                                                               .bodyMedium
                                                                               .fontStyle,
                                                                         ),
-                                                                        color: FlutterFlowTheme.of(context)
-                                                                            .secondaryText,
-                                                                        fontSize:
-                                                                            14.0,
-                                                                        letterSpacing:
+                                                                    elevation:
+                                                                        0.0,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            20.0),
+                                                                  ),
+                                                                ),
+                                                                FFButtonWidget(
+                                                                  onPressed:
+                                                                      () async {
+                                                                    logFirebaseEvent(
+                                                                        'GROUP_INVITE_VIEW_PROFILE_BTN_ON_TAP');
+                                                                    logFirebaseEvent(
+                                                                        'Button_navigate_to');
+
+                                                                    context
+                                                                        .pushNamed(
+                                                                      GroupWidget
+                                                                          .routeName,
+                                                                      queryParameters:
+                                                                          {
+                                                                        'groupDetails':
+                                                                            serializeParam(
+                                                                          invitesListItem
+                                                                              .groupRef,
+                                                                          ParamType
+                                                                              .DocumentReference,
+                                                                        ),
+                                                                      }.withoutNulls,
+                                                                    );
+                                                                  },
+                                                                  text:
+                                                                      'View Profile',
+                                                                  options:
+                                                                      FFButtonOptions(
+                                                                    height:
+                                                                        32.0,
+                                                                    padding: EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            16.0,
                                                                             0.0,
-                                                                        fontWeight: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontWeight,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontStyle,
-                                                                      ),
-                                                              elevation: 0.0,
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                color: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .alternate,
-                                                                width: 1.0,
-                                                              ),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          20.0),
+                                                                            16.0,
+                                                                            0.0),
+                                                                    iconPadding:
+                                                                        EdgeInsetsDirectional.fromSTEB(
+                                                                            0.0,
+                                                                            0.0,
+                                                                            0.0,
+                                                                            0.0),
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primaryBackground,
+                                                                    textStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodyMedium
+                                                                        .override(
+                                                                          font:
+                                                                              GoogleFonts.inter(
+                                                                            fontWeight:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                            fontStyle:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                          ),
+                                                                          color:
+                                                                              FlutterFlowTheme.of(context).primaryText,
+                                                                          fontSize:
+                                                                              14.0,
+                                                                          letterSpacing:
+                                                                              0.0,
+                                                                          fontWeight: FlutterFlowTheme.of(context)
+                                                                              .bodyMedium
+                                                                              .fontWeight,
+                                                                          fontStyle: FlutterFlowTheme.of(context)
+                                                                              .bodyMedium
+                                                                              .fontStyle,
+                                                                        ),
+                                                                    elevation:
+                                                                        0.0,
+                                                                    borderSide:
+                                                                        BorderSide(
+                                                                      color: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .alternate,
+                                                                      width:
+                                                                          1.0,
+                                                                    ),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            20.0),
+                                                                  ),
+                                                                ),
+                                                              ].divide(SizedBox(
+                                                                  width: 8.0)),
                                                             ),
-                                                          ),
-                                                        ].divide(SizedBox(
-                                                            width: 8.0)),
+                                                          if (containerGroupInvitesRecord
+                                                                  .status ==
+                                                              'denied')
+                                                            Row(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .max,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                FFButtonWidget(
+                                                                  onPressed:
+                                                                      () async {
+                                                                    logFirebaseEvent(
+                                                                        'GROUP_INVITE_PAGE_REMOVE_BTN_ON_TAP');
+                                                                    logFirebaseEvent(
+                                                                        'Button_backend_call');
+                                                                    await invitesListItem
+                                                                        .reference
+                                                                        .delete();
+                                                                  },
+                                                                  text:
+                                                                      'Remove',
+                                                                  options:
+                                                                      FFButtonOptions(
+                                                                    height:
+                                                                        32.0,
+                                                                    padding: EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            16.0,
+                                                                            0.0,
+                                                                            16.0,
+                                                                            0.0),
+                                                                    iconPadding:
+                                                                        EdgeInsetsDirectional.fromSTEB(
+                                                                            0.0,
+                                                                            0.0,
+                                                                            0.0,
+                                                                            0.0),
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primaryBackground,
+                                                                    textStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodyMedium
+                                                                        .override(
+                                                                          font:
+                                                                              GoogleFonts.inter(
+                                                                            fontWeight:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                            fontStyle:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                          ),
+                                                                          color:
+                                                                              FlutterFlowTheme.of(context).secondaryText,
+                                                                          fontSize:
+                                                                              14.0,
+                                                                          letterSpacing:
+                                                                              0.0,
+                                                                          fontWeight: FlutterFlowTheme.of(context)
+                                                                              .bodyMedium
+                                                                              .fontWeight,
+                                                                          fontStyle: FlutterFlowTheme.of(context)
+                                                                              .bodyMedium
+                                                                              .fontStyle,
+                                                                        ),
+                                                                    elevation:
+                                                                        0.0,
+                                                                    borderSide:
+                                                                        BorderSide(
+                                                                      color: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .alternate,
+                                                                      width:
+                                                                          1.0,
+                                                                    ),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            20.0),
+                                                                  ),
+                                                                ),
+                                                              ].divide(SizedBox(
+                                                                  width: 8.0)),
+                                                            ),
+                                                        ],
                                                       ),
-                                                  ],
+                                                    ),
+                                                  ].divide(
+                                                      SizedBox(height: 4.0)),
                                                 ),
                                               ),
-                                            ].divide(SizedBox(height: 4.0)),
-                                          ),
-                                        ),
-                                      ].divide(SizedBox(width: 16.0)),
+                                            ].divide(SizedBox(width: 16.0)),
+                                          );
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        );
-                      },
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

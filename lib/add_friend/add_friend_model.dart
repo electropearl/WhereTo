@@ -1,4 +1,6 @@
+import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/index.dart';
 import 'add_friend_widget.dart' show AddFriendWidget;
 import 'package:flutter/material.dart';
 
@@ -10,6 +12,8 @@ class AddFriendModel extends FlutterFlowModel<AddFriendWidget> {
   FocusNode? textFieldFocusNode;
   TextEditingController? textController;
   String? Function(BuildContext, String?)? textControllerValidator;
+  // Stores action output result for [Firestore Query - Query a collection] action in Button widget.
+  UsersRecord? friendUser;
 
   @override
   void initState(BuildContext context) {}

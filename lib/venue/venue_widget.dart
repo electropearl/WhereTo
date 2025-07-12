@@ -7,7 +7,9 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'venue_model.dart';
 export 'venue_model.dart';
@@ -44,6 +46,26 @@ class _VenueWidgetState extends State<VenueWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => VenueModel());
+
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'venue'});
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      logFirebaseEvent('VENUE_PAGE_venue_ON_INIT_STATE');
+      logFirebaseEvent('venue_firestore_query');
+      _model.venueDetail = await queryVenuesRecordOnce(
+        queryBuilder: (venuesRecord) => venuesRecord.where(
+          'name',
+          isEqualTo: widget.venueRef?.id,
+        ),
+        singleRecord: true,
+      ).then((s) => s.firstOrNull);
+      logFirebaseEvent('venue_update_page_state');
+      _model.peopleHereNow =
+          _model.venueDetail!.usersHereNow.toList().cast<DocumentReference>();
+      _model.groupsHerenow =
+          _model.venueDetail!.groupsHereNow.toList().cast<DocumentReference>();
+      safeSetState(() {});
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
@@ -84,6 +106,9 @@ class _VenueWidgetState extends State<VenueWidget> {
                     size: 24.0,
                   ),
                   onPressed: () async {
+                    logFirebaseEvent(
+                        'VENUE_PAGE_arrow_back_rounded_ICN_ON_TAP');
+                    logFirebaseEvent('IconButton_navigate_back');
                     context.safePop();
                   },
                 ),
@@ -150,7 +175,10 @@ class _VenueWidgetState extends State<VenueWidget> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          columnVenuesRecord.name,
+                                          valueOrDefault<String>(
+                                            columnVenuesRecord.name,
+                                            'Name',
+                                          ),
                                           style: FlutterFlowTheme.of(context)
                                               .headlineLarge
                                               .override(
@@ -185,6 +213,10 @@ class _VenueWidgetState extends State<VenueWidget> {
                                               highlightColor:
                                                   Colors.transparent,
                                               onTap: () async {
+                                                logFirebaseEvent(
+                                                    'VENUE_PAGE_Row_ztxqbmfp_ON_TAP');
+                                                logFirebaseEvent(
+                                                    'Row_launch_map');
                                                 await launchMap(
                                                   location: columnVenuesRecord
                                                       .location,
@@ -204,8 +236,11 @@ class _VenueWidgetState extends State<VenueWidget> {
                                                   ),
                                                   Flexible(
                                                     child: Text(
-                                                      columnVenuesRecord
-                                                          .address,
+                                                      valueOrDefault<String>(
+                                                        columnVenuesRecord
+                                                            .address,
+                                                        'NA',
+                                                      ),
                                                       style:
                                                           FlutterFlowTheme.of(
                                                                   context)
@@ -443,93 +478,70 @@ class _VenueWidgetState extends State<VenueWidget> {
                             child: Column(
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                AuthUserStreamWidget(
-                                  builder: (context) =>
-                                      StreamBuilder<GroupsRecord>(
-                                    stream: GroupsRecord.getDocument(
-                                        currentUserDocument!.currentGroup!),
-                                    builder: (context, snapshot) {
-                                      // Customize what your widget looks like when it's loading.
-                                      if (!snapshot.hasData) {
-                                        return Center(
-                                          child: SizedBox(
-                                            width: 50.0,
-                                            height: 50.0,
-                                            child: CircularProgressIndicator(
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                FlutterFlowTheme.of(context)
-                                                    .primary,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }
-
-                                      final containerGroupsRecord =
-                                          snapshot.data!;
-
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          color: FlutterFlowTheme.of(context)
-                                              .secondaryBackground,
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
-                                        ),
-                                        child: Padding(
-                                          padding: EdgeInsets.all(16.0),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.max,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Interested?',
-                                                style:
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryBackground,
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  child: Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Interested?',
+                                          style: FlutterFlowTheme.of(context)
+                                              .titleMedium
+                                              .override(
+                                                font: GoogleFonts.interTight(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleMedium
+                                                          .fontStyle,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w600,
+                                                fontStyle:
                                                     FlutterFlowTheme.of(context)
                                                         .titleMedium
-                                                        .override(
-                                                          font: GoogleFonts
-                                                              .interTight(
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            fontStyle:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .titleMedium
-                                                                    .fontStyle,
-                                                          ),
-                                                          letterSpacing: 0.0,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          fontStyle:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .titleMedium
-                                                                  .fontStyle,
-                                                        ),
+                                                        .fontStyle,
                                               ),
-                                              Column(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: [
-                                                  Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Stack(
-                                                        children: [
-                                                          if (!(currentUserDocument
-                                                                      ?.interestedInGoing
-                                                                      .toList() ??
-                                                                  [])
-                                                              .contains(widget
-                                                                  .venueRef))
-                                                            FFButtonWidget(
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Expanded(
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Stack(
+                                                      children: [
+                                                        if (!(currentUserDocument
+                                                                    ?.interestedInGoing
+                                                                    .toList() ??
+                                                                [])
+                                                            .contains(widget
+                                                                .venueRef))
+                                                          AuthUserStreamWidget(
+                                                            builder: (context) =>
+                                                                FFButtonWidget(
                                                               onPressed:
                                                                   () async {
+                                                                logFirebaseEvent(
+                                                                    'VENUE_PAGE_IM_INTERESTED_BTN_ON_TAP');
+                                                                logFirebaseEvent(
+                                                                    'Button_backend_call');
+
                                                                 await currentUserReference!
                                                                     .update({
                                                                   ...mapToFirestore(
@@ -543,6 +555,49 @@ class _VenueWidgetState extends State<VenueWidget> {
                                                                     },
                                                                   ),
                                                                 });
+                                                                logFirebaseEvent(
+                                                                    'Button_firestore_query');
+                                                                _model.interstedUsers =
+                                                                    await queryInterestedDailyRecordOnce(
+                                                                  parent: widget
+                                                                      .venueRef,
+                                                                  queryBuilder:
+                                                                      (interestedDailyRecord) =>
+                                                                          interestedDailyRecord
+                                                                              .orderBy('dateTime'),
+                                                                  singleRecord:
+                                                                      true,
+                                                                ).then((s) => s
+                                                                        .firstOrNull);
+                                                                logFirebaseEvent(
+                                                                    'Button_backend_call');
+
+                                                                await _model
+                                                                    .interstedUsers!
+                                                                    .reference
+                                                                    .update({
+                                                                  ...mapToFirestore(
+                                                                    {
+                                                                      'totalInterestToday':
+                                                                          FieldValue.increment(
+                                                                              1),
+                                                                      'peopleList':
+                                                                          FieldValue
+                                                                              .arrayUnion([
+                                                                        currentUserReference
+                                                                      ]),
+                                                                    },
+                                                                  ),
+                                                                });
+                                                                logFirebaseEvent(
+                                                                    'Button_update_page_state');
+                                                                _model.pageRebuild =
+                                                                    'PageRebuild';
+                                                                safeSetState(
+                                                                    () {});
+
+                                                                safeSetState(
+                                                                    () {});
                                                               },
                                                               text:
                                                                   'I\'m Interested',
@@ -605,15 +660,23 @@ class _VenueWidgetState extends State<VenueWidget> {
                                                                             8.0),
                                                               ),
                                                             ),
-                                                          if ((currentUserDocument
-                                                                      ?.interestedInGoing
-                                                                      .toList() ??
-                                                                  [])
-                                                              .contains(widget
-                                                                  .venueRef))
-                                                            FFButtonWidget(
+                                                          ),
+                                                        if ((currentUserDocument
+                                                                    ?.interestedInGoing
+                                                                    .toList() ??
+                                                                [])
+                                                            .contains(widget
+                                                                .venueRef))
+                                                          AuthUserStreamWidget(
+                                                            builder: (context) =>
+                                                                FFButtonWidget(
                                                               onPressed:
                                                                   () async {
+                                                                logFirebaseEvent(
+                                                                    'VENUE_PAGE_CANCEL_INTEREST_BTN_ON_TAP');
+                                                                logFirebaseEvent(
+                                                                    'Button_backend_call');
+
                                                                 await currentUserReference!
                                                                     .update({
                                                                   ...mapToFirestore(
@@ -627,6 +690,49 @@ class _VenueWidgetState extends State<VenueWidget> {
                                                                     },
                                                                   ),
                                                                 });
+                                                                logFirebaseEvent(
+                                                                    'Button_firestore_query');
+                                                                _model.interstedUsers2 =
+                                                                    await queryInterestedDailyRecordOnce(
+                                                                  parent: widget
+                                                                      .venueRef,
+                                                                  queryBuilder:
+                                                                      (interestedDailyRecord) =>
+                                                                          interestedDailyRecord
+                                                                              .orderBy('dateTime'),
+                                                                  singleRecord:
+                                                                      true,
+                                                                ).then((s) => s
+                                                                        .firstOrNull);
+                                                                logFirebaseEvent(
+                                                                    'Button_backend_call');
+
+                                                                await _model
+                                                                    .interstedUsers2!
+                                                                    .reference
+                                                                    .update({
+                                                                  ...mapToFirestore(
+                                                                    {
+                                                                      'totalInterestToday':
+                                                                          FieldValue.increment(
+                                                                              -(1)),
+                                                                      'peopleList':
+                                                                          FieldValue
+                                                                              .arrayRemove([
+                                                                        currentUserReference
+                                                                      ]),
+                                                                    },
+                                                                  ),
+                                                                });
+                                                                logFirebaseEvent(
+                                                                    'Button_update_page_state');
+                                                                _model.pageRebuild =
+                                                                    'Page Rebuild';
+                                                                safeSetState(
+                                                                    () {});
+
+                                                                safeSetState(
+                                                                    () {});
                                                               },
                                                               text:
                                                                   'Cancel Interest',
@@ -690,139 +796,65 @@ class _VenueWidgetState extends State<VenueWidget> {
                                                                             8.0),
                                                               ),
                                                             ),
-                                                        ],
-                                                      ),
-                                                      Stack(
-                                                        children: [
-                                                          if ((containerGroupsRecord
-                                                                      .venue !=
-                                                                  widget
-                                                                      .venueRef) ||
-                                                              (containerGroupsRecord
-                                                                      .venue ==
-                                                                  null))
-                                                            FFButtonWidget(
-                                                              onPressed:
-                                                                  () async {
-                                                                await containerGroupsRecord
-                                                                    .reference
-                                                                    .update(
-                                                                        createGroupsRecordData(
-                                                                  venue: widget
-                                                                      .venueRef,
-                                                                ));
-                                                              },
-                                                              text:
-                                                                  'Group is Interested',
-                                                              icon: Icon(
-                                                                Icons.group,
-                                                                size: 18.0,
-                                                              ),
-                                                              options:
-                                                                  FFButtonOptions(
-                                                                height: 44.0,
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(
-                                                                            5.0),
-                                                                iconPadding:
-                                                                    EdgeInsetsDirectional
-                                                                        .fromSTEB(
-                                                                            0.0,
-                                                                            0.0,
-                                                                            0.0,
-                                                                            0.0),
-                                                                iconColor:
-                                                                    FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .info,
-                                                                color: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .secondary,
-                                                                textStyle: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyMedium
-                                                                    .override(
-                                                                      font: GoogleFonts
-                                                                          .inter(
-                                                                        fontWeight:
-                                                                            FontWeight.w500,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontStyle,
-                                                                      ),
-                                                                      color: FlutterFlowTheme.of(
+                                                          ),
+                                                      ],
+                                                    ),
+                                                    if (currentUserDocument
+                                                            ?.currentGroup !=
+                                                        null)
+                                                      AuthUserStreamWidget(
+                                                        builder: (context) =>
+                                                            StreamBuilder<
+                                                                GroupsRecord>(
+                                                          stream: GroupsRecord
+                                                              .getDocument(
+                                                                  currentUserDocument!
+                                                                      .currentGroup!),
+                                                          builder: (context,
+                                                              snapshot) {
+                                                            // Customize what your widget looks like when it's loading.
+                                                            if (!snapshot
+                                                                .hasData) {
+                                                              return Center(
+                                                                child: SizedBox(
+                                                                  width: 50.0,
+                                                                  height: 50.0,
+                                                                  child:
+                                                                      CircularProgressIndicator(
+                                                                    valueColor:
+                                                                        AlwaysStoppedAnimation<
+                                                                            Color>(
+                                                                      FlutterFlowTheme.of(
                                                                               context)
-                                                                          .info,
-                                                                      fontSize:
-                                                                          14.0,
-                                                                      letterSpacing:
-                                                                          0.0,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      fontStyle: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .bodyMedium
-                                                                          .fontStyle,
+                                                                          .primary,
                                                                     ),
-                                                                elevation: 0.0,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            8.0),
-                                                              ),
-                                                            ),
-                                                          if (containerGroupsRecord
-                                                                  .venue ==
-                                                              widget.venueRef)
-                                                            FFButtonWidget(
-                                                              onPressed:
-                                                                  () async {
-                                                                if (containerGroupsRecord
-                                                                        .venue ==
-                                                                    null) {
-                                                                  var confirmDialogResponse =
-                                                                      await showDialog<
-                                                                              bool>(
-                                                                            context:
-                                                                                context,
-                                                                            builder:
-                                                                                (alertDialogContext) {
-                                                                              return AlertDialog(
-                                                                                title: Text('Group Interested'),
-                                                                                content: Text('Do you wish to assign your group as interested in going?'),
-                                                                                actions: [
-                                                                                  TextButton(
-                                                                                    onPressed: () => Navigator.pop(alertDialogContext, false),
-                                                                                    child: Text('Cancel'),
-                                                                                  ),
-                                                                                  TextButton(
-                                                                                    onPressed: () => Navigator.pop(alertDialogContext, true),
-                                                                                    child: Text('Confirm'),
-                                                                                  ),
-                                                                                ],
-                                                                              );
-                                                                            },
-                                                                          ) ??
-                                                                          false;
-                                                                  if (confirmDialogResponse) {
-                                                                    await containerGroupsRecord
-                                                                        .reference
-                                                                        .update(
-                                                                            createGroupsRecordData(
-                                                                      venue: widget
-                                                                          .venueRef,
-                                                                    ));
-                                                                  }
-                                                                } else {
-                                                                  var confirmDialogResponse =
-                                                                      await showDialog<
-                                                                              bool>(
-                                                                            context:
-                                                                                context,
-                                                                            builder:
-                                                                                (alertDialogContext) {
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }
+
+                                                            final stackGroupsRecord =
+                                                                snapshot.data!;
+
+                                                            return Stack(
+                                                              children: [
+                                                                if ((stackGroupsRecord
+                                                                            .venue !=
+                                                                        widget
+                                                                            .venueRef) ||
+                                                                    (stackGroupsRecord
+                                                                            .venue ==
+                                                                        null))
+                                                                  FFButtonWidget(
+                                                                    onPressed:
+                                                                        () async {
+                                                                      logFirebaseEvent(
+                                                                          'VENUE_GROUP_IS_INTERESTED_BTN_ON_TAP');
+                                                                      logFirebaseEvent(
+                                                                          'Button_alert_dialog');
+                                                                      var confirmDialogResponse = await showDialog<bool>(
+                                                                            context: context,
+                                                                            builder: (alertDialogContext) {
                                                                               return AlertDialog(
                                                                                 title: Text('Group is Interested in Another Venue'),
                                                                                 content: Text('Your group is already interested in going somewhere else.  Are you sure you wish to change group venue?'),
@@ -840,130 +872,279 @@ class _VenueWidgetState extends State<VenueWidget> {
                                                                             },
                                                                           ) ??
                                                                           false;
-                                                                  if (confirmDialogResponse) {
-                                                                    await containerGroupsRecord
-                                                                        .reference
-                                                                        .update(
-                                                                            createGroupsRecordData(
-                                                                      venue: widget
-                                                                          .venueRef,
-                                                                    ));
-                                                                  }
-                                                                }
-                                                              },
-                                                              text:
-                                                                  'Cancel Group Interest',
-                                                              icon: Icon(
-                                                                Icons.group_off,
-                                                                size: 18.0,
-                                                              ),
-                                                              options:
-                                                                  FFButtonOptions(
-                                                                height: 44.0,
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(
-                                                                            5.0),
-                                                                iconPadding:
-                                                                    EdgeInsetsDirectional
-                                                                        .fromSTEB(
-                                                                            0.0,
-                                                                            0.0,
-                                                                            0.0,
-                                                                            0.0),
-                                                                iconColor:
-                                                                    FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .info,
-                                                                color: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .error,
-                                                                textStyle: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyMedium
-                                                                    .override(
-                                                                      font: GoogleFonts
-                                                                          .inter(
-                                                                        fontWeight:
-                                                                            FontWeight.w500,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodyMedium
-                                                                            .fontStyle,
-                                                                      ),
+                                                                      if (confirmDialogResponse) {
+                                                                        logFirebaseEvent(
+                                                                            'Button_backend_call');
+
+                                                                        await stackGroupsRecord
+                                                                            .reference
+                                                                            .update(createGroupsRecordData(
+                                                                          venue:
+                                                                              widget.venueRef,
+                                                                        ));
+                                                                        logFirebaseEvent(
+                                                                            'Button_firestore_query');
+                                                                        _model.interestRef =
+                                                                            await queryInterestedDailyRecordOnce(
+                                                                          parent:
+                                                                              widget.venueRef,
+                                                                          queryBuilder: (interestedDailyRecord) =>
+                                                                              interestedDailyRecord.orderBy('dateTime'),
+                                                                          singleRecord:
+                                                                              true,
+                                                                        ).then((s) => s.firstOrNull);
+                                                                        logFirebaseEvent(
+                                                                            'Button_backend_call');
+
+                                                                        await _model
+                                                                            .interestRefOther!
+                                                                            .reference
+                                                                            .update({
+                                                                          ...mapToFirestore(
+                                                                            {
+                                                                              'totalGroupInterestToday': FieldValue.increment(1),
+                                                                              'groupList': FieldValue.arrayUnion([
+                                                                                stackGroupsRecord.reference
+                                                                              ]),
+                                                                            },
+                                                                          ),
+                                                                        });
+                                                                      }
+                                                                    
+                                                                      logFirebaseEvent(
+                                                                          'Button_update_page_state');
+                                                                      _model.pageRebuild =
+                                                                          'pageRebuild';
+                                                                      safeSetState(
+                                                                          () {});
+
+                                                                      safeSetState(
+                                                                          () {});
+                                                                    },
+                                                                    text:
+                                                                        'Group is Interested',
+                                                                    icon: Icon(
+                                                                      Icons
+                                                                          .group,
+                                                                      size:
+                                                                          18.0,
+                                                                    ),
+                                                                    options:
+                                                                        FFButtonOptions(
+                                                                      height:
+                                                                          44.0,
+                                                                      padding:
+                                                                          EdgeInsets.all(
+                                                                              5.0),
+                                                                      iconPadding: EdgeInsetsDirectional.fromSTEB(
+                                                                          0.0,
+                                                                          0.0,
+                                                                          0.0,
+                                                                          0.0),
+                                                                      iconColor:
+                                                                          FlutterFlowTheme.of(context)
+                                                                              .info,
                                                                       color: FlutterFlowTheme.of(
                                                                               context)
-                                                                          .info,
-                                                                      fontSize:
-                                                                          14.0,
-                                                                      letterSpacing:
-                                                                          0.0,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      fontStyle: FlutterFlowTheme.of(
+                                                                          .secondary,
+                                                                      textStyle: FlutterFlowTheme.of(
                                                                               context)
                                                                           .bodyMedium
-                                                                          .fontStyle,
+                                                                          .override(
+                                                                            font:
+                                                                                GoogleFonts.inter(
+                                                                              fontWeight: FontWeight.w500,
+                                                                              fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                            ),
+                                                                            color:
+                                                                                FlutterFlowTheme.of(context).info,
+                                                                            fontSize:
+                                                                                14.0,
+                                                                            letterSpacing:
+                                                                                0.0,
+                                                                            fontWeight:
+                                                                                FontWeight.w500,
+                                                                            fontStyle:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                          ),
+                                                                      elevation:
+                                                                          0.0,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              8.0),
                                                                     ),
-                                                                elevation: 0.0,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            8.0),
-                                                              ),
-                                                            ),
-                                                        ],
+                                                                  ),
+                                                                if (stackGroupsRecord
+                                                                        .venue ==
+                                                                    widget
+                                                                        .venueRef)
+                                                                  FFButtonWidget(
+                                                                    onPressed:
+                                                                        () async {
+                                                                      logFirebaseEvent(
+                                                                          'VENUE_CANCEL_GROUP_INTEREST_BTN_ON_TAP');
+                                                                      logFirebaseEvent(
+                                                                          'Button_backend_call');
+
+                                                                      await stackGroupsRecord
+                                                                          .reference
+                                                                          .update({
+                                                                        ...mapToFirestore(
+                                                                          {
+                                                                            'venue':
+                                                                                FieldValue.delete(),
+                                                                          },
+                                                                        ),
+                                                                      });
+                                                                      logFirebaseEvent(
+                                                                          'Button_firestore_query');
+                                                                      _model.interestRefOther =
+                                                                          await queryInterestedDailyRecordOnce(
+                                                                        parent:
+                                                                            widget.venueRef,
+                                                                        queryBuilder:
+                                                                            (interestedDailyRecord) =>
+                                                                                interestedDailyRecord.orderBy('dateTime'),
+                                                                        singleRecord:
+                                                                            true,
+                                                                      ).then((s) =>
+                                                                              s.firstOrNull);
+                                                                      logFirebaseEvent(
+                                                                          'Button_backend_call');
+
+                                                                      await _model
+                                                                          .interestRefOther!
+                                                                          .reference
+                                                                          .update({
+                                                                        ...mapToFirestore(
+                                                                          {
+                                                                            'totalGroupInterestToday':
+                                                                                FieldValue.increment(-(1)),
+                                                                            'groupList':
+                                                                                FieldValue.arrayRemove([
+                                                                              stackGroupsRecord.reference
+                                                                            ]),
+                                                                          },
+                                                                        ),
+                                                                      });
+                                                                      logFirebaseEvent(
+                                                                          'Button_update_app_state');
+                                                                      FFAppState()
+                                                                              .showFullList =
+                                                                          false;
+                                                                      safeSetState(
+                                                                          () {});
+
+                                                                      safeSetState(
+                                                                          () {});
+                                                                    },
+                                                                    text:
+                                                                        'Cancel Group Interest',
+                                                                    icon: Icon(
+                                                                      Icons
+                                                                          .group_off,
+                                                                      size:
+                                                                          16.0,
+                                                                    ),
+                                                                    options:
+                                                                        FFButtonOptions(
+                                                                      height:
+                                                                          44.0,
+                                                                      padding:
+                                                                          EdgeInsets.all(
+                                                                              5.0),
+                                                                      iconPadding: EdgeInsetsDirectional.fromSTEB(
+                                                                          0.0,
+                                                                          0.0,
+                                                                          0.0,
+                                                                          0.0),
+                                                                      iconColor:
+                                                                          FlutterFlowTheme.of(context)
+                                                                              .info,
+                                                                      color: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .error,
+                                                                      textStyle: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .bodyMedium
+                                                                          .override(
+                                                                            font:
+                                                                                GoogleFonts.inter(
+                                                                              fontWeight: FontWeight.w500,
+                                                                              fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                            ),
+                                                                            color:
+                                                                                FlutterFlowTheme.of(context).info,
+                                                                            fontSize:
+                                                                                14.0,
+                                                                            letterSpacing:
+                                                                                0.0,
+                                                                            fontWeight:
+                                                                                FontWeight.w500,
+                                                                            fontStyle:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                          ),
+                                                                      elevation:
+                                                                          0.0,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              8.0),
+                                                                    ),
+                                                                  ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        ),
                                                       ),
-                                                    ].divide(
-                                                        SizedBox(width: 12.0)),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsetsDirectional
-                                                            .fromSTEB(0.0, 10.0,
-                                                                0.0, 0.0),
-                                                    child: Text(
-                                                      'Let others know you\'re interested in this venue! Mark yourself or your group as interested to connect with like-minded people.',
-                                                      style:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodySmall
-                                                              .override(
-                                                                font:
-                                                                    GoogleFonts
-                                                                        .inter(
-                                                                  fontWeight: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontWeight,
-                                                                  fontStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
-                                                                color: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .secondaryText,
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontWeight,
-                                                                fontStyle: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontStyle,
-                                                              ),
-                                                    ),
-                                                  ),
-                                                ],
+                                                  ].divide(
+                                                      SizedBox(width: 12.0)),
+                                                ),
                                               ),
-                                            ].divide(SizedBox(height: 12.0)),
+                                              Padding(
+                                                padding: EdgeInsetsDirectional
+                                                    .fromSTEB(
+                                                        0.0, 10.0, 0.0, 0.0),
+                                                child: Text(
+                                                  'Let others know you\'re interested in this venue! Mark yourself or your group as interested to connect with like-minded people.',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodySmall
+                                                      .override(
+                                                        font: GoogleFonts.inter(
+                                                          fontWeight:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .bodySmall
+                                                                  .fontWeight,
+                                                          fontStyle:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .bodySmall
+                                                                  .fontStyle,
+                                                        ),
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .secondaryText,
+                                                        letterSpacing: 0.0,
+                                                        fontWeight:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodySmall
+                                                                .fontWeight,
+                                                        fontStyle:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodySmall
+                                                                .fontStyle,
+                                                      ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      );
-                                    },
+                                      ].divide(SizedBox(height: 12.0)),
+                                    ),
                                   ),
                                 ),
                                 Padding(
@@ -2383,6 +2564,10 @@ class _VenueWidgetState extends State<VenueWidget> {
                                       0.0, 0.0, 0.0, 30.0),
                                   child: FFButtonWidget(
                                     onPressed: () async {
+                                      logFirebaseEvent(
+                                          'VENUE_PAGE_CLAIM_THIS_VENUE_BTN_ON_TAP');
+                                      logFirebaseEvent('Button_navigate_to');
+
                                       context.pushNamed(
                                         VerifyPageWidget.routeName,
                                         queryParameters: {

@@ -6,7 +6,10 @@ import '/backend/backend.dart';
 
 import '/auth/base_auth_user_provider.dart';
 
+import '/backend/push_notifications/push_notifications_handler.dart'
+    show PushNotificationsHandler;
 import '/main.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 import '/index.dart';
@@ -97,19 +100,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
             name: MatchModeWidget.routeName,
             path: MatchModeWidget.routePath,
-            asyncParams: {
-              'matchSession': getDoc(['matches'], MatchesRecord.fromSnapshot),
-            },
             builder: (context, params) => params.isEmpty
                 ? NavBarPage(initialPage: 'MatchMode')
                 : NavBarPage(
                     initialPage: 'MatchMode',
-                    page: MatchModeWidget(
-                      matchSession: params.getParam(
-                        'matchSession',
-                        ParamType.Document,
-                      ),
-                    ),
+                    page: MatchModeWidget(),
                   )),
         FFRoute(
             name: ProfileWidget.routeName,
@@ -214,19 +209,19 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => AddFriendWidget(),
         ),
         FFRoute(
-          name: MatchFoundWidget.routeName,
-          path: MatchFoundWidget.routePath,
+          name: MatchDecideWidget.routeName,
+          path: MatchDecideWidget.routePath,
           asyncParams: {
             'userRef': getDoc(['users'], UsersRecord.fromSnapshot),
-            'venueRef': getDoc(['venues'], VenuesRecord.fromSnapshot),
+            'matchRef': getDoc(['matches'], MatchesRecord.fromSnapshot),
           },
-          builder: (context, params) => MatchFoundWidget(
+          builder: (context, params) => MatchDecideWidget(
             userRef: params.getParam(
               'userRef',
               ParamType.Document,
             ),
-            venueRef: params.getParam(
-              'venueRef',
+            matchRef: params.getParam(
+              'matchRef',
               ParamType.Document,
             ),
           ),
@@ -297,6 +292,32 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: PrivacyPolicyWidget.routeName,
           path: PrivacyPolicyWidget.routePath,
           builder: (context, params) => PrivacyPolicyWidget(),
+        ),
+        FFRoute(
+          name: MatchFoundWidget.routeName,
+          path: MatchFoundWidget.routePath,
+          asyncParams: {
+            'mathedRef': getDoc(['matches'], MatchesRecord.fromSnapshot),
+          },
+          builder: (context, params) => MatchFoundWidget(
+            mathedRef: params.getParam(
+              'mathedRef',
+              ParamType.Document,
+            ),
+          ),
+        ),
+        FFRoute(
+          name: MatchModeCompassWidget.routeName,
+          path: MatchModeCompassWidget.routePath,
+          asyncParams: {
+            'matchSession': getDoc(['matches'], MatchesRecord.fromSnapshot),
+          },
+          builder: (context, params) => MatchModeCompassWidget(
+            matchSession: params.getParam(
+              'matchSession',
+              ParamType.Document,
+            ),
+          ),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
@@ -484,13 +505,13 @@ class FFRoute {
               : builder(context, ffParams);
           final child = appStateNotifier.loading
               ? Container(
-                  color: Colors.transparent,
+                  color: FlutterFlowTheme.of(context).info,
                   child: Image.asset(
-                    'assets/images/transparent_where_to_variant_1.png',
+                    'assets/images/where_2_logo_transparentCentered.png',
                     fit: BoxFit.contain,
                   ),
                 )
-              : page;
+              : PushNotificationsHandler(child: page);
 
           final transitionInfo = state.transitionInfo;
           return transitionInfo.hasTransition

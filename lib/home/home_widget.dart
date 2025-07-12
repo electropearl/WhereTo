@@ -74,29 +74,45 @@ class _HomeWidgetState extends State<HomeWidget> {
     super.initState();
     _model = createModel(context, () => HomeModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'Home'});
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      logFirebaseEvent('HOME_PAGE_Home_ON_INIT_STATE');
       currentUserLocationValue =
           await getCurrentUserLocation(defaultLocation: LatLng(0.0, 0.0));
+      logFirebaseEvent('Home_update_app_state');
       FFAppState().showFullList = false;
       FFAppState().friend = (currentUserDocument?.friendsList.toList() ?? [])
           .toList()
           .cast<DocumentReference>();
-      safeSetState(() {});
+      FFAppState().update(() {});
+      logFirebaseEvent('Home_custom_action');
+      await actions.startAndTrackVenuePresence(
+        currentUserReference!,
+      );
+      logFirebaseEvent('Home_custom_action');
+      await actions.startAndTrackVenuePresence(
+        currentUserReference!,
+      );
       if (((FFAppState().locations.isNotEmpty) == false) ||
           (valueOrDefault(currentUserDocument?.radiusSaved, 0.0) !=
               FFAppState().filterRadius)) {
+        logFirebaseEvent('Home_update_app_state');
         FFAppState().filterRadius =
             valueOrDefault(currentUserDocument?.radiusSaved, 0.0);
         safeSetState(() {});
+        logFirebaseEvent('Home_update_app_state');
         FFAppState().interestedInGoing =
             (currentUserDocument?.interestedInGoing.toList() ?? [])
                 .toList()
                 .cast<DocumentReference>();
         safeSetState(() {});
+        logFirebaseEvent('Home_update_app_state');
         FFAppState().showFullList = false;
         safeSetState(() {});
+        logFirebaseEvent('Home_firestore_query');
         _model.venueQuery = await queryVenuesRecordOnce();
+        logFirebaseEvent('Home_update_app_state');
         FFAppState().locations = functions
             .sortVenuesByDistanceToUser(
                 _model.venueQuery!.toList(),
@@ -108,10 +124,16 @@ class _HomeWidgetState extends State<HomeWidget> {
             .cast<DocumentReference>();
         safeSetState(() {});
         if (valueOrDefault(currentUserDocument?.radiusSaved, 0.0) < 5.0) {
+          logFirebaseEvent('Home_backend_call');
+
           await currentUserReference!.update(createUsersRecordData(
             radiusSaved: 5.0,
           ));
         }
+      } else {
+        logFirebaseEvent('Home_update_app_state');
+        FFAppState().showFullList = false;
+        safeSetState(() {});
       }
     });
 
@@ -158,27 +180,69 @@ class _HomeWidgetState extends State<HomeWidget> {
           child: Scaffold(
             key: scaffoldKey,
             backgroundColor: FlutterFlowTheme.of(context).alternate,
-            appBar: AppBar(
-              backgroundColor: FlutterFlowTheme.of(context).primary,
-              automaticallyImplyLeading: false,
-              title: Text(
-                'Venues Nearby',
-                style: FlutterFlowTheme.of(context).headlineMedium.override(
-                      font: GoogleFonts.interTight(
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FlutterFlowTheme.of(context)
-                            .headlineMedium
-                            .fontStyle,
-                      ),
-                      letterSpacing: 0.0,
-                      fontWeight: FontWeight.bold,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).headlineMedium.fontStyle,
+            appBar: PreferredSize(
+              preferredSize:
+                  Size.fromHeight(MediaQuery.sizeOf(context).height * 0.13),
+              child: AppBar(
+                backgroundColor:
+                    FlutterFlowTheme.of(context).secondaryBackground,
+                automaticallyImplyLeading: false,
+                actions: [],
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Padding(
+                    padding:
+                        EdgeInsetsDirectional.fromSTEB(0.0, 15.0, 0.0, 0.0),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: AlignmentDirectional(0.0, -1.0),
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(
+                                0.0, 0.0, 0.0, 28.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Image.asset(
+                                'assets/images/where_2_logo_transparentCentered.png',
+                                fit: BoxFit.contain,
+                                alignment: Alignment(-1.0, 0.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: AlignmentDirectional(0.0, 1.0),
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(
+                                0.0, 0.0, 0.0, 10.0),
+                            child: Text(
+                              'Venues Nearby',
+                              style: FlutterFlowTheme.of(context)
+                                  .headlineMedium
+                                  .override(
+                                    font: GoogleFonts.interTight(
+                                      fontWeight: FontWeight.w600,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .headlineMedium
+                                          .fontStyle,
+                                    ),
+                                    color: FlutterFlowTheme.of(context).info,
+                                    fontSize: 24.0,
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.w600,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .headlineMedium
+                                        .fontStyle,
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                ),
+                centerTitle: true,
+                elevation: 0.0,
               ),
-              actions: [],
-              centerTitle: true,
-              elevation: 2.0,
             ),
             body: SafeArea(
               top: true,
@@ -224,11 +288,16 @@ class _HomeWidgetState extends State<HomeWidget> {
                                               children: [
                                                 TextSpan(
                                                   text: valueOrDefault<String>(
-                                                    valueOrDefault(
-                                                            currentUserDocument
-                                                                ?.radiusSaved,
-                                                            0.0)
-                                                        .toString(),
+                                                    formatNumber(
+                                                      valueOrDefault(
+                                                          currentUserDocument
+                                                              ?.radiusSaved,
+                                                          0.0),
+                                                      formatType:
+                                                          FormatType.custom,
+                                                      format: '##',
+                                                      locale: '',
+                                                    ),
                                                     '5',
                                                   ),
                                                   style: FlutterFlowTheme.of(
@@ -326,13 +395,18 @@ class _HomeWidgetState extends State<HomeWidget> {
                                   fillColor: FlutterFlowTheme.of(context)
                                       .secondaryBackground,
                                   icon: Icon(
-                                    Icons.notifications_none,
+                                    Icons.refresh_sharp,
                                     color: FlutterFlowTheme.of(context)
                                         .primaryText,
                                     size: 20.0,
                                   ),
-                                  onPressed: () {
-                                    print('IconButton pressed ...');
+                                  onPressed: () async {
+                                    logFirebaseEvent(
+                                        'HOME_PAGE_refresh_sharp_ICN_ON_TAP');
+                                    logFirebaseEvent(
+                                        'IconButton_update_app_state');
+                                    FFAppState().showFullList = false;
+                                    FFAppState().update(() {});
                                   },
                                 ),
                                 FlutterFlowIconButton(
@@ -365,6 +439,10 @@ class _HomeWidgetState extends State<HomeWidget> {
                                         size: 20.0,
                                       ),
                                       onPressed: () async {
+                                        logFirebaseEvent(
+                                            'HOME_PAGE_tune_ICN_ON_TAP');
+                                        logFirebaseEvent(
+                                            'IconButton_bottom_sheet');
                                         await showModalBottomSheet(
                                           isScrollControlled: true,
                                           backgroundColor: Colors.transparent,
@@ -390,283 +468,313 @@ class _HomeWidgetState extends State<HomeWidget> {
                                         ).then((value) => safeSetState(() {}));
                                       },
                                     ),
-                                    FlutterFlowIconButton(
-                                      borderRadius: 20.0,
-                                      buttonSize: 40.0,
-                                      fillColor: FlutterFlowTheme.of(context)
-                                          .secondaryBackground,
-                                      icon: Icon(
-                                        Icons.map,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primaryText,
-                                        size: 20.0,
-                                      ),
-                                      onPressed: () async {
-                                        _model.apiResult24d =
-                                            await FetchVenuesCall.call(
-                                          location: '29.4241,-98.4936',
-                                          radius: 50000,
-                                        );
+                                    if (currentUserUid ==
+                                        'SRWmrlj7rSVQ11mWtxY0dCrSzlJ2')
+                                      FlutterFlowIconButton(
+                                        borderRadius: 20.0,
+                                        buttonSize: 40.0,
+                                        fillColor: FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
+                                        icon: Icon(
+                                          Icons.map,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          size: 20.0,
+                                        ),
+                                        onPressed: () async {
+                                          logFirebaseEvent(
+                                              'HOME_PAGE_map_ICN_ON_TAP');
+                                          logFirebaseEvent(
+                                              'IconButton_backend_call');
+                                          _model.apiResult24d =
+                                              await FetchVenuesCall.call(
+                                            location: '29.4241,-98.4936',
+                                            radius: 50000,
+                                          );
 
-                                        if (FetchVenuesCall.results(
-                                                  (_model.apiResult24d
-                                                          ?.jsonBody ??
-                                                      ''),
-                                                ) !=
-                                                null &&
-                                            (FetchVenuesCall.results(
-                                              (_model.apiResult24d?.jsonBody ??
-                                                  ''),
-                                            ))!
-                                                .isNotEmpty) {
-                                          for (int loop1Index = 0;
-                                              loop1Index <=
-                                                  valueOrDefault<int>(
-                                                    FetchVenuesCall.results(
-                                                      (_model.apiResult24d
-                                                              ?.jsonBody ??
-                                                          ''),
-                                                    )?.length,
-                                                    0,
-                                                  );
-                                              loop1Index++) {
-                                            final currentLoop1Item =
-                                                FetchVenuesCall.results(
-                                              (_model.apiResult24d?.jsonBody ??
-                                                  ''),
-                                            )!
-                                                    .map((e) => e)
-                                                    .toList()[loop1Index];
-                                            _model.apiResultxki =
-                                                await FetchPlaceDetailsCall
-                                                    .call(
-                                              placeId: getJsonField(
-                                                currentLoop1Item,
-                                                r'''$.place_id''',
-                                              ).toString(),
-                                            );
-
-                                            _model.docExist =
-                                                await queryVenuesRecordOnce(
-                                              queryBuilder: (venuesRecord) =>
-                                                  venuesRecord.where(
-                                                'place_id',
-                                                isEqualTo: getJsonField(
+                                          if (FetchVenuesCall.results(
+                                                    (_model.apiResult24d
+                                                            ?.jsonBody ??
+                                                        ''),
+                                                  ) !=
+                                                  null &&
+                                              (FetchVenuesCall.results(
+                                                (_model.apiResult24d
+                                                        ?.jsonBody ??
+                                                    ''),
+                                              ))!
+                                                  .isNotEmpty) {
+                                            for (int loop1Index = 0;
+                                                loop1Index <=
+                                                    valueOrDefault<int>(
+                                                      FetchVenuesCall.results(
+                                                        (_model.apiResult24d
+                                                                ?.jsonBody ??
+                                                            ''),
+                                                      )?.length,
+                                                      0,
+                                                    );
+                                                loop1Index++) {
+                                              final currentLoop1Item =
+                                                  FetchVenuesCall.results(
+                                                (_model.apiResult24d
+                                                        ?.jsonBody ??
+                                                    ''),
+                                              )!
+                                                      .map((e) => e)
+                                                      .toList()[loop1Index];
+                                              logFirebaseEvent(
+                                                  'IconButton_backend_call');
+                                              _model.apiResultxki =
+                                                  await FetchPlaceDetailsCall
+                                                      .call(
+                                                placeId: getJsonField(
                                                   currentLoop1Item,
                                                   r'''$.place_id''',
                                                 ).toString(),
-                                              ),
-                                              singleRecord: true,
-                                            ).then((s) => s.firstOrNull);
-                                            if (_model.docExist != null) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    'Location Exist',
-                                                    style: TextStyle(
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primaryText,
-                                                    ),
-                                                  ),
-                                                  duration: Duration(
-                                                      milliseconds: 4000),
-                                                  backgroundColor:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .secondary,
-                                                ),
-                                              );
-                                            } else {
-                                              _model.locationLatLng =
-                                                  await actions
-                                                      .convertToGeoPoint(
-                                                getJsonField(
-                                                  currentLoop1Item,
-                                                  r'''$.geometry.location.lat''',
-                                                ).toString(),
-                                                getJsonField(
-                                                  currentLoop1Item,
-                                                  r'''$.geometry.location.lng''',
-                                                ).toString(),
                                               );
 
-                                              var venuesRecordReference =
-                                                  VenuesRecord.collection
-                                                      .doc(getJsonField(
-                                                currentLoop1Item,
-                                                r'''$.place_id''',
-                                              ).toString());
-                                              await venuesRecordReference.set({
-                                                ...createVenuesRecordData(
-                                                  name: getJsonField(
-                                                    currentLoop1Item,
-                                                    r'''$.name''',
-                                                  ).toString(),
-                                                  address: FetchPlaceDetailsCall
-                                                      .address(
-                                                    (_model.apiResultxki
-                                                            ?.jsonBody ??
-                                                        ''),
-                                                  ),
-                                                  location:
-                                                      _model.locationLatLng,
-                                                  photoUrl:
-                                                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${getJsonField(
-                                                    currentLoop1Item,
-                                                    r'''$.photos[0].photo_reference''',
-                                                  ).toString()}&key=AIzaSyCmChbqubBkmA0O_ikMHT0yH5i_Jx_LnlU',
-                                                  isClaimed: false,
-                                                  placeId: getJsonField(
+                                              logFirebaseEvent(
+                                                  'IconButton_firestore_query');
+                                              _model.docExist =
+                                                  await queryVenuesRecordOnce(
+                                                queryBuilder: (venuesRecord) =>
+                                                    venuesRecord.where(
+                                                  'place_id',
+                                                  isEqualTo: getJsonField(
                                                     currentLoop1Item,
                                                     r'''$.place_id''',
                                                   ).toString(),
-                                                  phone: FetchPlaceDetailsCall
-                                                      .phone(
-                                                    (_model.apiResultxki
-                                                            ?.jsonBody ??
-                                                        ''),
-                                                  ),
-                                                  website: FetchPlaceDetailsCall
-                                                      .website(
-                                                    (_model.apiResultxki
-                                                            ?.jsonBody ??
-                                                        ''),
-                                                  ),
-                                                  promoted: false,
                                                 ),
-                                                ...mapToFirestore(
-                                                  {
-                                                    'createdAt': FieldValue
-                                                        .serverTimestamp(),
-                                                    'weekday_text':
+                                                singleRecord: true,
+                                              ).then((s) => s.firstOrNull);
+                                              if (_model.docExist != null) {
+                                                logFirebaseEvent(
+                                                    'IconButton_show_snack_bar');
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Location Exist',
+                                                      style: TextStyle(
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .primaryText,
+                                                      ),
+                                                    ),
+                                                    duration: Duration(
+                                                        milliseconds: 4000),
+                                                    backgroundColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .secondary,
+                                                  ),
+                                                );
+                                              } else {
+                                                logFirebaseEvent(
+                                                    'IconButton_custom_action');
+                                                _model.locationLatLng =
+                                                    await actions
+                                                        .convertToGeoPoint(
+                                                  getJsonField(
+                                                    currentLoop1Item,
+                                                    r'''$.geometry.location.lat''',
+                                                  ).toString(),
+                                                  getJsonField(
+                                                    currentLoop1Item,
+                                                    r'''$.geometry.location.lng''',
+                                                  ).toString(),
+                                                );
+                                                logFirebaseEvent(
+                                                    'IconButton_backend_call');
+
+                                                var venuesRecordReference =
+                                                    VenuesRecord.collection
+                                                        .doc(getJsonField(
+                                                  currentLoop1Item,
+                                                  r'''$.place_id''',
+                                                ).toString());
+                                                await venuesRecordReference
+                                                    .set({
+                                                  ...createVenuesRecordData(
+                                                    name: getJsonField(
+                                                      currentLoop1Item,
+                                                      r'''$.name''',
+                                                    ).toString(),
+                                                    address:
                                                         FetchPlaceDetailsCall
-                                                            .weekdaytext(
+                                                            .address(
                                                       (_model.apiResultxki
                                                               ?.jsonBody ??
                                                           ''),
                                                     ),
-                                                    'types': (getJsonField(
+                                                    location:
+                                                        _model.locationLatLng,
+                                                    photoUrl:
+                                                        'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${getJsonField(
                                                       currentLoop1Item,
-                                                      r'''$.types[0]''',
-                                                      true,
-                                                    ) as List)
-                                                        .map<String>(
-                                                            (s) => s.toString())
-                                                        .toList(),
-                                                  },
-                                                ),
-                                              });
-                                              _model.documentID = VenuesRecord
-                                                  .getDocumentFromData({
-                                                ...createVenuesRecordData(
-                                                  name: getJsonField(
-                                                    currentLoop1Item,
-                                                    r'''$.name''',
-                                                  ).toString(),
-                                                  address: FetchPlaceDetailsCall
-                                                      .address(
-                                                    (_model.apiResultxki
-                                                            ?.jsonBody ??
-                                                        ''),
-                                                  ),
-                                                  location:
-                                                      _model.locationLatLng,
-                                                  photoUrl:
-                                                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${getJsonField(
-                                                    currentLoop1Item,
-                                                    r'''$.photos[0].photo_reference''',
-                                                  ).toString()}&key=AIzaSyCmChbqubBkmA0O_ikMHT0yH5i_Jx_LnlU',
-                                                  isClaimed: false,
-                                                  placeId: getJsonField(
-                                                    currentLoop1Item,
-                                                    r'''$.place_id''',
-                                                  ).toString(),
-                                                  phone: FetchPlaceDetailsCall
-                                                      .phone(
-                                                    (_model.apiResultxki
-                                                            ?.jsonBody ??
-                                                        ''),
-                                                  ),
-                                                  website: FetchPlaceDetailsCall
-                                                      .website(
-                                                    (_model.apiResultxki
-                                                            ?.jsonBody ??
-                                                        ''),
-                                                  ),
-                                                  promoted: false,
-                                                ),
-                                                ...mapToFirestore(
-                                                  {
-                                                    'createdAt': DateTime.now(),
-                                                    'weekday_text':
-                                                        FetchPlaceDetailsCall
-                                                            .weekdaytext(
+                                                      r'''$.photos[0].photo_reference''',
+                                                    ).toString()}&key=AIzaSyCmChbqubBkmA0O_ikMHT0yH5i_Jx_LnlU',
+                                                    isClaimed: false,
+                                                    placeId: getJsonField(
+                                                      currentLoop1Item,
+                                                      r'''$.place_id''',
+                                                    ).toString(),
+                                                    phone: FetchPlaceDetailsCall
+                                                        .phone(
                                                       (_model.apiResultxki
                                                               ?.jsonBody ??
                                                           ''),
                                                     ),
-                                                    'types': (getJsonField(
-                                                      currentLoop1Item,
-                                                      r'''$.types[0]''',
-                                                      true,
-                                                    ) as List)
-                                                        .map<String>(
-                                                            (s) => s.toString())
-                                                        .toList(),
-                                                  },
-                                                ),
-                                              }, venuesRecordReference);
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    '${loop1Index.toString()} has been added',
-                                                    style: TextStyle(
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primaryText,
+                                                    website:
+                                                        FetchPlaceDetailsCall
+                                                            .website(
+                                                      (_model.apiResultxki
+                                                              ?.jsonBody ??
+                                                          ''),
                                                     ),
+                                                    promoted: false,
                                                   ),
-                                                  duration: Duration(
-                                                      milliseconds: 4000),
-                                                  backgroundColor:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .success,
-                                                ),
-                                              );
+                                                  ...mapToFirestore(
+                                                    {
+                                                      'createdAt': FieldValue
+                                                          .serverTimestamp(),
+                                                      'weekday_text':
+                                                          FetchPlaceDetailsCall
+                                                              .weekdaytext(
+                                                        (_model.apiResultxki
+                                                                ?.jsonBody ??
+                                                            ''),
+                                                      ),
+                                                      'types': (getJsonField(
+                                                        currentLoop1Item,
+                                                        r'''$.types[0]''',
+                                                        true,
+                                                      ) as List)
+                                                          .map<String>((s) =>
+                                                              s.toString())
+                                                          .toList(),
+                                                    },
+                                                  ),
+                                                });
+                                                _model.documentID = VenuesRecord
+                                                    .getDocumentFromData({
+                                                  ...createVenuesRecordData(
+                                                    name: getJsonField(
+                                                      currentLoop1Item,
+                                                      r'''$.name''',
+                                                    ).toString(),
+                                                    address:
+                                                        FetchPlaceDetailsCall
+                                                            .address(
+                                                      (_model.apiResultxki
+                                                              ?.jsonBody ??
+                                                          ''),
+                                                    ),
+                                                    location:
+                                                        _model.locationLatLng,
+                                                    photoUrl:
+                                                        'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${getJsonField(
+                                                      currentLoop1Item,
+                                                      r'''$.photos[0].photo_reference''',
+                                                    ).toString()}&key=AIzaSyCmChbqubBkmA0O_ikMHT0yH5i_Jx_LnlU',
+                                                    isClaimed: false,
+                                                    placeId: getJsonField(
+                                                      currentLoop1Item,
+                                                      r'''$.place_id''',
+                                                    ).toString(),
+                                                    phone: FetchPlaceDetailsCall
+                                                        .phone(
+                                                      (_model.apiResultxki
+                                                              ?.jsonBody ??
+                                                          ''),
+                                                    ),
+                                                    website:
+                                                        FetchPlaceDetailsCall
+                                                            .website(
+                                                      (_model.apiResultxki
+                                                              ?.jsonBody ??
+                                                          ''),
+                                                    ),
+                                                    promoted: false,
+                                                  ),
+                                                  ...mapToFirestore(
+                                                    {
+                                                      'createdAt':
+                                                          DateTime.now(),
+                                                      'weekday_text':
+                                                          FetchPlaceDetailsCall
+                                                              .weekdaytext(
+                                                        (_model.apiResultxki
+                                                                ?.jsonBody ??
+                                                            ''),
+                                                      ),
+                                                      'types': (getJsonField(
+                                                        currentLoop1Item,
+                                                        r'''$.types[0]''',
+                                                        true,
+                                                      ) as List)
+                                                          .map<String>((s) =>
+                                                              s.toString())
+                                                          .toList(),
+                                                    },
+                                                  ),
+                                                }, venuesRecordReference);
+                                                logFirebaseEvent(
+                                                    'IconButton_show_snack_bar');
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      '${loop1Index.toString()} has been added',
+                                                      style: TextStyle(
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .primaryText,
+                                                      ),
+                                                    ),
+                                                    duration: Duration(
+                                                        milliseconds: 4000),
+                                                    backgroundColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .success,
+                                                  ),
+                                                );
+                                              }
                                             }
-                                          }
-                                          FFAppState().showFullList = true;
-                                          FFAppState().update(() {});
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                'Failed to run API',
-                                                style: TextStyle(
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .primaryText,
+                                            logFirebaseEvent(
+                                                'IconButton_update_app_state');
+                                            FFAppState().showFullList = true;
+                                            FFAppState().update(() {});
+                                          } else {
+                                            logFirebaseEvent(
+                                                'IconButton_show_snack_bar');
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'Failed to run API',
+                                                  style: TextStyle(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primaryText,
+                                                  ),
                                                 ),
+                                                duration: Duration(
+                                                    milliseconds: 4000),
+                                                backgroundColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondary,
                                               ),
-                                              duration:
-                                                  Duration(milliseconds: 4000),
-                                              backgroundColor:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondary,
-                                            ),
-                                          );
-                                        }
+                                            );
+                                          }
 
-                                        safeSetState(() {});
-                                      },
-                                    ),
+                                          safeSetState(() {});
+                                        },
+                                      ),
                                   ].divide(SizedBox(width: 12.0)),
                                 ),
                               ],
@@ -683,6 +791,7 @@ class _HomeWidgetState extends State<HomeWidget> {
 
                                     return ListView.builder(
                                       padding: EdgeInsets.zero,
+                                      primary: false,
                                       shrinkWrap: true,
                                       scrollDirection: Axis.vertical,
                                       itemCount: venuesList.length,
@@ -727,6 +836,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                 highlightColor:
                                                     Colors.transparent,
                                                 onTap: () async {
+                                                  logFirebaseEvent(
+                                                      'HOME_PAGE_Container_klpb8078_ON_TAP');
+                                                  logFirebaseEvent(
+                                                      'Container_navigate_to');
+
                                                   context.pushNamed(
                                                     VenueWidget.routeName,
                                                     queryParameters: {
@@ -948,7 +1062,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                         Align(
                                                                       alignment:
                                                                           AlignmentDirectional(
-                                                                              0.0,
+                                                                              1.0,
                                                                               0.0),
                                                                       child:
                                                                           SingleChildScrollView(
@@ -1215,11 +1329,6 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                             List<InterestedDailyRecord>
                                                                 columnInterestedDailyRecordList =
                                                                 snapshot.data!;
-                                                            // Return an empty Container when the item does not exist.
-                                                            if (snapshot.data!
-                                                                .isEmpty) {
-                                                              return Container();
-                                                            }
                                                             final columnInterestedDailyRecord =
                                                                 columnInterestedDailyRecordList
                                                                         .isNotEmpty
@@ -1277,7 +1386,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                                 padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 2.0),
                                                                                 child: Text(
                                                                                   valueOrDefault<String>(
-                                                                                    columnInterestedDailyRecord?.totalInterestToday.toString(),
+                                                                                    columnInterestedDailyRecord?.totalGroupInterestToday.toString(),
                                                                                     '0',
                                                                                   ),
                                                                                   style: FlutterFlowTheme.of(context).bodySmall.override(
@@ -1329,8 +1438,12 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                                 ? FFAppState().removeFromInterestedInGoing(containerVenuesRecord.reference)
                                                                                 : FFAppState().addToInterestedInGoing(containerVenuesRecord.reference),
                                                                           );
+                                                                          logFirebaseEvent(
+                                                                              'HOME_PAGE_ToggleIcon_p6ra31vp_ON_TOGGLE');
                                                                           if ((currentUserDocument?.interestedInGoing.toList() ?? [])
                                                                               .contains(containerVenuesRecord.reference)) {
+                                                                            logFirebaseEvent('ToggleIcon_backend_call');
+
                                                                             await currentUserReference!.update({
                                                                               ...mapToFirestore(
                                                                                 {
@@ -1340,6 +1453,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                                 },
                                                                               ),
                                                                             });
+                                                                            logFirebaseEvent('ToggleIcon_backend_call');
 
                                                                             await columnInterestedDailyRecord!.reference.update({
                                                                               ...mapToFirestore(
@@ -1352,6 +1466,8 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                               ),
                                                                             });
                                                                           } else {
+                                                                            logFirebaseEvent('ToggleIcon_backend_call');
+
                                                                             await currentUserReference!.update({
                                                                               ...mapToFirestore(
                                                                                 {
@@ -1361,6 +1477,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                                 },
                                                                               ),
                                                                             });
+                                                                            logFirebaseEvent('ToggleIcon_backend_call');
 
                                                                             await columnInterestedDailyRecord!.reference.update({
                                                                               ...mapToFirestore(
@@ -1374,6 +1491,8 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                             });
                                                                           }
 
+                                                                          logFirebaseEvent(
+                                                                              'ToggleIcon_update_app_state');
                                                                           FFAppState()
                                                                               .interestedInGoing = (currentUserDocument?.interestedInGoing.toList() ??
                                                                                   [])
@@ -1444,12 +1563,6 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                         List<InterestedDailyRecord>
                                                                             containerInterestedDailyRecordList =
                                                                             snapshot.data!;
-                                                                        // Return an empty Container when the item does not exist.
-                                                                        if (snapshot
-                                                                            .data!
-                                                                            .isEmpty) {
-                                                                          return Container();
-                                                                        }
                                                                         final containerInterestedDailyRecord = containerInterestedDailyRecordList.isNotEmpty
                                                                             ? containerInterestedDailyRecordList.first
                                                                             : null;
@@ -1480,24 +1593,22 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                                 ),
                                                                                 Padding(
                                                                                   padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 2.0),
-                                                                                  child: AuthUserStreamWidget(
-                                                                                    builder: (context) => Text(
-                                                                                      valueOrDefault<String>(
-                                                                                        columnInterestedDailyRecord?.peopleList.where((e) => (currentUserDocument?.friendsList.toList() ?? []).contains(e)).toList().length.toString(),
-                                                                                        '0',
-                                                                                      ),
-                                                                                      style: FlutterFlowTheme.of(context).bodySmall.override(
-                                                                                            font: GoogleFonts.inter(
-                                                                                              fontWeight: FontWeight.w600,
-                                                                                              fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
-                                                                                            ),
-                                                                                            color: Color(0xFF4B39EF),
-                                                                                            fontSize: 16.0,
-                                                                                            letterSpacing: 0.0,
+                                                                                  child: Text(
+                                                                                    valueOrDefault<String>(
+                                                                                      containerInterestedDailyRecord?.totalGroupInterestToday.toString(),
+                                                                                      '0',
+                                                                                    ),
+                                                                                    style: FlutterFlowTheme.of(context).bodySmall.override(
+                                                                                          font: GoogleFonts.inter(
                                                                                             fontWeight: FontWeight.w600,
                                                                                             fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
                                                                                           ),
-                                                                                    ),
+                                                                                          color: Color(0xFF4B39EF),
+                                                                                          fontSize: 16.0,
+                                                                                          letterSpacing: 0.0,
+                                                                                          fontWeight: FontWeight.w600,
+                                                                                          fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                                        ),
                                                                                   ),
                                                                                 ),
                                                                               ].divide(SizedBox(width: 4.0)),

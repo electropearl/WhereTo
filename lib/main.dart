@@ -1,3 +1,4 @@
+import '/custom_code/actions/index.dart' as actions;
 import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'auth/firebase_auth/firebase_user_provider.dart';
 import 'auth/firebase_auth/auth_util.dart';
 
+import 'backend/push_notifications/push_notifications_util.dart';
 import 'backend/firebase/firebase_config.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow/flutter_flow_util.dart';
@@ -18,6 +20,12 @@ void main() async {
   usePathUrlStrategy();
 
   await initFirebase();
+
+  // Start initial custom actions code
+  await actions.initializeGeofencing();
+  await actions.registerVenueGeofences();
+  await actions.startListeningToGeofenceEventsWithGroupSupport();
+  // End initial custom actions code
 
   await FlutterFlowTheme.initialize();
 
@@ -68,6 +76,7 @@ class _MyAppState extends State<MyApp> {
   late Stream<BaseAuthUser> userStream;
 
   final authUserSub = authenticatedUserStream.listen((_) {});
+  final fcmTokenSub = fcmTokenUserStream.listen((_) {});
 
   @override
   void initState() {
@@ -75,7 +84,7 @@ class _MyAppState extends State<MyApp> {
 
     _appStateNotifier = AppStateNotifier.instance;
     _router = createRouter(_appStateNotifier);
-    userStream = hereNowFirebaseUserStream()
+    userStream = where2FirebaseUserStream()
       ..listen((user) {
         _appStateNotifier.update(user);
       });
@@ -89,7 +98,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     authUserSub.cancel();
-
+    fcmTokenSub.cancel();
     super.dispose();
   }
 
@@ -102,7 +111,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Here Now',
+      title: 'Where 2',
       scrollBehavior: MyAppScrollBehavior(),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
@@ -192,10 +201,10 @@ class _NavBarPageState extends State<NavBarPage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.favorite,
+              Icons.arrow_upward,
             ),
             activeIcon: Icon(
-              Icons.favorite,
+              Icons.arrow_upward,
               size: 35.0,
             ),
             label: 'Matched',

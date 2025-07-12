@@ -31,6 +31,8 @@ class _MatchesPendingWidgetState extends State<MatchesPendingWidget> {
     super.initState();
     _model = createModel(context, () => MatchesPendingModel());
 
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'matchesPending'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 

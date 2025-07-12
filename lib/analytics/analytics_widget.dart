@@ -34,6 +34,7 @@ class _AnalyticsWidgetState extends State<AnalyticsWidget> {
     super.initState();
     _model = createModel(context, () => AnalyticsModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'analytics'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -72,6 +73,9 @@ class _AnalyticsWidgetState extends State<AnalyticsWidget> {
                       size: 24.0,
                     ),
                     onPressed: () async {
+                      logFirebaseEvent(
+                          'ANALYTICS_arrow_back_rounded_ICN_ON_TAP');
+                      logFirebaseEvent('IconButton_navigate_back');
                       context.safePop();
                     },
                   ),

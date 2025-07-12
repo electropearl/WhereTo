@@ -11,6 +11,7 @@ import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'group_management_model.dart';
 export 'group_management_model.dart';
 
@@ -73,8 +74,12 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
     super.initState();
     _model = createModel(context, () => GroupManagementModel());
 
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'groupManagement'});
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      logFirebaseEvent('GROUP_MANAGEMENT_groupManagement_ON_INIT');
+      logFirebaseEvent('groupManagement_firestore_query');
       _model.newInvites = await queryGroupInvitesRecordOnce(
         queryBuilder: (groupInvitesRecord) => groupInvitesRecord
             .where(
@@ -86,7 +91,22 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
               isEqualTo: 'new',
             ),
       );
-      _model.groupsQuery = await queryGroupsRecordOnce();
+      logFirebaseEvent('groupManagement_firestore_query');
+      _model.groupsQuery = await queryGroupsRecordOnce(
+        queryBuilder: (groupsRecord) => groupsRecord.where(Filter.or(
+          Filter(
+            'memberUserIds',
+            arrayContains: currentUserReference,
+          ),
+          Filter(
+            'groupOwner',
+            isEqualTo: currentUserReference,
+          ),
+        )),
+      );
+      logFirebaseEvent('groupManagement_update_app_state');
+      FFAppState().showFullList = false;
+      safeSetState(() {});
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -101,6 +121,8 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return Title(
         title: 'groupManagement',
         color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
@@ -114,6 +136,9 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
             backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
             floatingActionButton: FloatingActionButton(
               onPressed: () async {
+                logFirebaseEvent('GROUP_MANAGEMENT_FloatingActionButton_4u');
+                logFirebaseEvent('FloatingActionButton_navigate_to');
+
                 context.pushNamed(GroupJoinWidget.routeName);
               },
               backgroundColor: FlutterFlowTheme.of(context).primary,
@@ -154,6 +179,9 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                       size: 24.0,
                     ),
                     onPressed: () async {
+                      logFirebaseEvent(
+                          'GROUP_MANAGEMENT_info_outlined_ICN_ON_TA');
+                      logFirebaseEvent('IconButton_bottom_sheet');
                       await showModalBottomSheet(
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
@@ -457,6 +485,10 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                       highlightColor:
                                                           Colors.transparent,
                                                       onTap: () async {
+                                                        logFirebaseEvent(
+                                                            'GROUP_MANAGEMENT_Container_qvsptp14_ON_T');
+                                                        logFirebaseEvent(
+                                                            'Container_bottom_sheet');
                                                         await showModalBottomSheet(
                                                           isScrollControlled:
                                                               true,
@@ -498,6 +530,9 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                                 _model.friendsAdded =
                                                                     value));
 
+                                                        logFirebaseEvent(
+                                                            'Container_backend_call');
+
                                                         await columnGroupsRecord
                                                             .reference
                                                             .update({
@@ -509,6 +544,8 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                             },
                                                           ),
                                                         });
+                                                        logFirebaseEvent(
+                                                            'Container_navigate_to');
 
                                                         context.pushNamed(
                                                           GroupWidget.routeName,
@@ -725,6 +762,11 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                     Expanded(
                                                       child: FFButtonWidget(
                                                         onPressed: () async {
+                                                          logFirebaseEvent(
+                                                              'GROUP_MANAGEMENT_VIEW_GROUP_BTN_ON_TAP');
+                                                          logFirebaseEvent(
+                                                              'Button_navigate_to');
+
                                                           context.pushNamed(
                                                             GroupWidget
                                                                 .routeName,
@@ -805,6 +847,10 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                     ),
                                                     FFButtonWidget(
                                                       onPressed: () async {
+                                                        logFirebaseEvent(
+                                                            'GROUP_MANAGEMENT_LEAVE_GROUP_BTN_ON_TAP');
+                                                        logFirebaseEvent(
+                                                            'Button_alert_dialog');
                                                         var confirmDialogResponse =
                                                             await showDialog<
                                                                     bool>(
@@ -838,6 +884,9 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                                 ) ??
                                                                 false;
                                                         if (confirmDialogResponse) {
+                                                          logFirebaseEvent(
+                                                              'Button_backend_call');
+
                                                           await currentUserReference!
                                                               .update({
                                                             ...mapToFirestore(
@@ -848,6 +897,14 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                               },
                                                             ),
                                                           });
+                                                          logFirebaseEvent(
+                                                              'Button_update_app_state');
+                                                          FFAppState()
+                                                                  .showFullList =
+                                                              false;
+                                                          safeSetState(() {});
+                                                          logFirebaseEvent(
+                                                              'Button_navigate_to');
 
                                                           context.pushNamed(
                                                               GroupManagementWidget
@@ -969,6 +1026,10 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                         hoverColor: Colors.transparent,
                                         highlightColor: Colors.transparent,
                                         onTap: () async {
+                                          logFirebaseEvent(
+                                              'GROUP_MANAGEMENT_Badge_fmo5t67t_ON_TAP');
+                                          logFirebaseEvent('Badge_navigate_to');
+
                                           context.pushNamed(
                                               GroupInviteWidget.routeName);
                                         },
@@ -1060,6 +1121,7 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
 
                                           return ListView.separated(
                                             padding: EdgeInsets.zero,
+                                            primary: false,
                                             shrinkWrap: true,
                                             scrollDirection: Axis.vertical,
                                             itemCount: groups.length,
@@ -1409,6 +1471,11 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                                     FFButtonWidget(
                                                                   onPressed:
                                                                       () async {
+                                                                    logFirebaseEvent(
+                                                                        'GROUP_MANAGEMENT_VIEW_GROUP_BTN_ON_TAP');
+                                                                    logFirebaseEvent(
+                                                                        'Button_navigate_to');
+
                                                                     context
                                                                         .pushNamed(
                                                                       GroupWidget
@@ -1488,6 +1555,10 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                                     FFButtonWidget(
                                                                   onPressed:
                                                                       () async {
+                                                                    logFirebaseEvent(
+                                                                        'GROUP_MANAGEMENT_JOIN_NOW_BTN_ON_TAP');
+                                                                    logFirebaseEvent(
+                                                                        'Button_alert_dialog');
                                                                     var confirmDialogResponse =
                                                                         await showDialog<bool>(
                                                                               context: context,
@@ -1510,12 +1581,17 @@ class _GroupManagementWidgetState extends State<GroupManagementWidget> {
                                                                             ) ??
                                                                             false;
                                                                     if (confirmDialogResponse) {
+                                                                      logFirebaseEvent(
+                                                                          'Button_backend_call');
+
                                                                       await currentUserReference!
                                                                           .update(
                                                                               createUsersRecordData(
                                                                         currentGroup:
                                                                             containerGroupsRecord.reference,
                                                                       ));
+                                                                      logFirebaseEvent(
+                                                                          'Button_navigate_to');
 
                                                                       context
                                                                           .pushNamed(

@@ -31,6 +31,8 @@ class _MatchesAcceptedWidgetState extends State<MatchesAcceptedWidget> {
     super.initState();
     _model = createModel(context, () => MatchesAcceptedModel());
 
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'matchesAccepted'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 

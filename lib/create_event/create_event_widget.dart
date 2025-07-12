@@ -36,6 +36,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
     super.initState();
     _model = createModel(context, () => CreateEventModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'createEvent'});
     _model.textController1 ??= TextEditingController();
     _model.textFieldFocusNode1 ??= FocusNode();
 
@@ -82,6 +83,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                   size: 30.0,
                 ),
                 onPressed: () async {
+                  logFirebaseEvent('CREATE_EVENT_arrow_back_rounded_ICN_ON_T');
+                  logFirebaseEvent('IconButton_navigate_back');
                   context.pop();
                 },
               ),

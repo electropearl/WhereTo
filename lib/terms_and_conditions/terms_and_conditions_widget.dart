@@ -28,6 +28,8 @@ class _TermsAndConditionsWidgetState extends State<TermsAndConditionsWidget> {
     super.initState();
     _model = createModel(context, () => TermsAndConditionsModel());
 
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'termsAndConditions'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -65,6 +67,8 @@ class _TermsAndConditionsWidgetState extends State<TermsAndConditionsWidget> {
                   size: 24.0,
                 ),
                 onPressed: () async {
+                  logFirebaseEvent('TERMS_AND_CONDITIONS_arrow_back_rounded_');
+                  logFirebaseEvent('IconButton_navigate_back');
                   context.safePop();
                 },
               ),

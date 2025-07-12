@@ -27,6 +27,8 @@ class _PrivacyPolicyWidgetState extends State<PrivacyPolicyWidget> {
     super.initState();
     _model = createModel(context, () => PrivacyPolicyModel());
 
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'privacyPolicy'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 

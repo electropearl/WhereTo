@@ -138,3 +138,16 @@ double calculateBearing(
       (bearing * 180 / math.pi + 360) % 360; // Convert to degrees and normalize
   return bearing;
 }
+
+int calculateAge(DateTime birthday) {
+  final today = DateTime.now();
+  int age = today.year - birthday.year;
+
+  // Check if birthday hasn't occurred yet this year
+  if (today.month < birthday.month ||
+      (today.month == birthday.month && today.day < birthday.day)) {
+    age--;
+  }
+
+  return age;
+}

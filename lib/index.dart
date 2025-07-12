@@ -21,7 +21,7 @@ export '/location_permission/location_permission_widget.dart'
 export '/profile_personalize/profile_personalize_widget.dart'
     show ProfilePersonalizeWidget;
 export '/add_friend/add_friend_widget.dart' show AddFriendWidget;
-export '/match_found/match_found_widget.dart' show MatchFoundWidget;
+export '/match_decide/match_decide_widget.dart' show MatchDecideWidget;
 export '/matches/matches_widget.dart' show MatchesWidget;
 export '/matches_pending/matches_pending_widget.dart' show MatchesPendingWidget;
 export '/matches_accepted/matches_accepted_widget.dart'
@@ -35,3 +35,6 @@ export '/support/support_widget.dart' show SupportWidget;
 export '/terms_and_conditions/terms_and_conditions_widget.dart'
     show TermsAndConditionsWidget;
 export '/privacy_policy/privacy_policy_widget.dart' show PrivacyPolicyWidget;
+export '/match_found/match_found_widget.dart' show MatchFoundWidget;
+export '/match_mode_compass/match_mode_compass_widget.dart'
+    show MatchModeCompassWidget;

@@ -161,11 +161,6 @@ class UsersRecord extends FirestoreRecord {
   int get numOfFailedMatches => _numOfFailedMatches ?? 0;
   bool hasNumOfFailedMatches() => _numOfFailedMatches != null;
 
-  // "currentVenueId" field.
-  DocumentReference? _currentVenueId;
-  DocumentReference? get currentVenueId => _currentVenueId;
-  bool hasCurrentVenueId() => _currentVenueId != null;
-
   // "matchCooldownUntil" field.
   DateTime? _matchCooldownUntil;
   DateTime? get matchCooldownUntil => _matchCooldownUntil;
@@ -212,6 +207,26 @@ class UsersRecord extends FirestoreRecord {
   bool get admin => _admin ?? false;
   bool hasAdmin() => _admin != null;
 
+  // "latitude" field.
+  double? _latitude;
+  double get latitude => _latitude ?? 0.0;
+  bool hasLatitude() => _latitude != null;
+
+  // "longitude" field.
+  double? _longitude;
+  double get longitude => _longitude ?? 0.0;
+  bool hasLongitude() => _longitude != null;
+
+  // "FriendCode" field.
+  String? _friendCode;
+  String get friendCode => _friendCode ?? '';
+  bool hasFriendCode() => _friendCode != null;
+
+  // "fcmToken" field.
+  String? _fcmToken;
+  String get fcmToken => _fcmToken ?? '';
+  bool hasFcmToken() => _fcmToken != null;
+
   void _initializeFields() {
     _email = snapshotData['email'] as String?;
     _displayName = snapshotData['display_name'] as String?;
@@ -242,7 +257,6 @@ class UsersRecord extends FirestoreRecord {
     _currentVenue = snapshotData['currentVenue'] as DocumentReference?;
     _lastMatchAttemptAt = snapshotData['lastMatchAttemptAt'] as DateTime?;
     _numOfFailedMatches = castToType<int>(snapshotData['numOfFailedMatches']);
-    _currentVenueId = snapshotData['currentVenueId'] as DocumentReference?;
     _matchCooldownUntil = snapshotData['matchCooldownUntil'] as DateTime?;
     _gender = snapshotData['gender'] as String?;
     _couple = snapshotData['couple'] as bool?;
@@ -256,6 +270,10 @@ class UsersRecord extends FirestoreRecord {
             : StoreOwnerInformationStruct.maybeFromMap(
                 snapshotData['profileVerificationInfo']);
     _admin = snapshotData['admin'] as bool?;
+    _latitude = castToType<double>(snapshotData['latitude']);
+    _longitude = castToType<double>(snapshotData['longitude']);
+    _friendCode = snapshotData['FriendCode'] as String?;
+    _fcmToken = snapshotData['fcmToken'] as String?;
   }
 
   static CollectionReference get collection =>
@@ -314,7 +332,6 @@ Map<String, dynamic> createUsersRecordData({
   DocumentReference? currentVenue,
   DateTime? lastMatchAttemptAt,
   int? numOfFailedMatches,
-  DocumentReference? currentVenueId,
   DateTime? matchCooldownUntil,
   String? gender,
   bool? couple,
@@ -323,6 +340,10 @@ Map<String, dynamic> createUsersRecordData({
   DateTime? arrivedAt,
   StoreOwnerInformationStruct? profileVerificationInfo,
   bool? admin,
+  double? latitude,
+  double? longitude,
+  String? friendCode,
+  String? fcmToken,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -348,7 +369,6 @@ Map<String, dynamic> createUsersRecordData({
       'currentVenue': currentVenue,
       'lastMatchAttemptAt': lastMatchAttemptAt,
       'numOfFailedMatches': numOfFailedMatches,
-      'currentVenueId': currentVenueId,
       'matchCooldownUntil': matchCooldownUntil,
       'gender': gender,
       'couple': couple,
@@ -357,6 +377,10 @@ Map<String, dynamic> createUsersRecordData({
       'arrivedAt': arrivedAt,
       'profileVerificationInfo': StoreOwnerInformationStruct().toMap(),
       'admin': admin,
+      'latitude': latitude,
+      'longitude': longitude,
+      'FriendCode': friendCode,
+      'fcmToken': fcmToken,
     }.withoutNulls,
   );
 
@@ -402,7 +426,6 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e1?.currentVenue == e2?.currentVenue &&
         e1?.lastMatchAttemptAt == e2?.lastMatchAttemptAt &&
         e1?.numOfFailedMatches == e2?.numOfFailedMatches &&
-        e1?.currentVenueId == e2?.currentVenueId &&
         e1?.matchCooldownUntil == e2?.matchCooldownUntil &&
         e1?.gender == e2?.gender &&
         e1?.couple == e2?.couple &&
@@ -411,7 +434,11 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         listEquality.equals(e1?.matchedUserIds, e2?.matchedUserIds) &&
         e1?.arrivedAt == e2?.arrivedAt &&
         e1?.profileVerificationInfo == e2?.profileVerificationInfo &&
-        e1?.admin == e2?.admin;
+        e1?.admin == e2?.admin &&
+        e1?.latitude == e2?.latitude &&
+        e1?.longitude == e2?.longitude &&
+        e1?.friendCode == e2?.friendCode &&
+        e1?.fcmToken == e2?.fcmToken;
   }
 
   @override
@@ -445,7 +472,6 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e?.currentVenue,
         e?.lastMatchAttemptAt,
         e?.numOfFailedMatches,
-        e?.currentVenueId,
         e?.matchCooldownUntil,
         e?.gender,
         e?.couple,
@@ -454,7 +480,11 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e?.matchedUserIds,
         e?.arrivedAt,
         e?.profileVerificationInfo,
-        e?.admin
+        e?.admin,
+        e?.latitude,
+        e?.longitude,
+        e?.friendCode,
+        e?.fcmToken
       ]);
 
   @override

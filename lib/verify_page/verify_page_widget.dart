@@ -40,6 +40,7 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
     super.initState();
     _model = createModel(context, () => VerifyPageModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'verifyPage'});
     _model.textController1 ??= TextEditingController();
     _model.textFieldFocusNode1 ??= FocusNode();
 
@@ -84,6 +85,8 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                   size: 30.0,
                 ),
                 onPressed: () async {
+                  logFirebaseEvent('VERIFY_arrow_back_rounded_ICN_ON_TAP');
+                  logFirebaseEvent('IconButton_navigate_back');
                   context.pop();
                 },
               ),
@@ -970,6 +973,10 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                                   highlightColor:
                                                       Colors.transparent,
                                                   onTap: () async {
+                                                    logFirebaseEvent(
+                                                        'VERIFY_Container_kgh5io2i_ON_TAP');
+                                                    logFirebaseEvent(
+                                                        'Container_upload_file_to_firebase');
                                                     final selectedFiles =
                                                         await selectFiles(
                                                       multiFile: false,
@@ -1252,6 +1259,10 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                                   highlightColor:
                                                       Colors.transparent,
                                                   onTap: () async {
+                                                    logFirebaseEvent(
+                                                        'VERIFY_Container_8rowrhsj_ON_TAP');
+                                                    logFirebaseEvent(
+                                                        'Container_upload_file_to_firebase');
                                                     final selectedFiles =
                                                         await selectFiles(
                                                       multiFile: false,
@@ -1533,6 +1544,10 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                                   highlightColor:
                                                       Colors.transparent,
                                                   onTap: () async {
+                                                    logFirebaseEvent(
+                                                        'VERIFY_Container_blvid5bk_ON_TAP');
+                                                    logFirebaseEvent(
+                                                        'Container_upload_media_to_firebase');
                                                     final selectedMedia =
                                                         await selectMediaWithSourceBottomSheet(
                                                       context: context,
@@ -1821,6 +1836,10 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                                   highlightColor:
                                                       Colors.transparent,
                                                   onTap: () async {
+                                                    logFirebaseEvent(
+                                                        'VERIFY_Container_jltpvkid_ON_TAP');
+                                                    logFirebaseEvent(
+                                                        'Container_upload_media_to_firebase');
                                                     final selectedMedia =
                                                         await selectMediaWithSourceBottomSheet(
                                                       context: context,
@@ -2082,6 +2101,9 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                               ),
                               FFButtonWidget(
                                 onPressed: () async {
+                                  logFirebaseEvent(
+                                      'VERIFY_SUBMIT_FOR_VERIFICATION_BTN_ON_TA');
+                                  logFirebaseEvent('Button_validate_form');
                                   _model.success = true;
                                   if (_model.formKey.currentState == null ||
                                       !_model.formKey.currentState!
@@ -2133,6 +2155,8 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                     _model.success = false;
                                   }
                                   if (_model.success!) {
+                                    logFirebaseEvent('Button_backend_call');
+
                                     await currentUserReference!
                                         .update(createUsersRecordData(
                                       profileVerificationInfo:
@@ -2164,6 +2188,7 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                         clearUnsetFields: false,
                                       ),
                                     ));
+                                    logFirebaseEvent('Button_firestore_query');
                                     _model.admins = await queryUsersRecordOnce(
                                       queryBuilder: (usersRecord) =>
                                           usersRecord.where(
@@ -2171,9 +2196,11 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                         isEqualTo: true,
                                       ),
                                     );
+                                    logFirebaseEvent('Button_navigate_to');
 
                                     context.goNamed(SuccessWidget.routeName);
                                   } else {
+                                    logFirebaseEvent('Button_show_snack_bar');
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(

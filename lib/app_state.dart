@@ -35,9 +35,6 @@ class FFAppState extends ChangeNotifier {
       _filterRadius = prefs.getDouble('ff_filterRadius') ?? _filterRadius;
     });
     _safeInit(() {
-      _showFullList = prefs.getBool('ff_showFullList') ?? _showFullList;
-    });
-    _safeInit(() {
       _sortedVenues = prefs
               .getStringList('ff_sortedVenues')
               ?.map((path) => path.ref)
@@ -156,7 +153,6 @@ class FFAppState extends ChangeNotifier {
   bool get showFullList => _showFullList;
   set showFullList(bool value) {
     _showFullList = value;
-    prefs.setBool('ff_showFullList', value);
   }
 
   List<DocumentReference> _sortedVenues = [];

@@ -28,6 +28,8 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
     super.initState();
     _model = createModel(context, () => ForgotPasswordModel());
 
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'ForgotPassword'});
     _model.emailAddressTextController ??= TextEditingController();
     _model.emailAddressFocusNode ??= FocusNode();
 
@@ -63,6 +65,8 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                 size: 30.0,
               ),
               onPressed: () async {
+                logFirebaseEvent('FORGOT_PASSWORD_arrow_back_rounded_ICN_O');
+                logFirebaseEvent('IconButton_navigate_back');
                 context.pop();
               },
             ),
@@ -119,6 +123,9 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                         hoverColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         onTap: () async {
+                          logFirebaseEvent(
+                              'FORGOT_PASSWORD_PAGE_Row_inpelbza_ON_TAP');
+                          logFirebaseEvent('Row_navigate_back');
                           context.safePop();
                         },
                         child: Row(
@@ -302,6 +309,9 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                           EdgeInsetsDirectional.fromSTEB(16.0, 24.0, 16.0, 0.0),
                       child: FFButtonWidget(
                         onPressed: () async {
+                          logFirebaseEvent(
+                              'FORGOT_PASSWORD_PAGE_Button-Login_ON_TAP');
+                          logFirebaseEvent('Button-Login_auth');
                           if (_model.emailAddressTextController.text.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

@@ -13,6 +13,32 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "groups",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "groupOwner",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "memberUserIds",
+          "arrayConfig": "CONTAINS"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "fcm_tokens",
+      "fieldPath": "fcm_token",
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
+        }
+      ]
     }
   ]
 }

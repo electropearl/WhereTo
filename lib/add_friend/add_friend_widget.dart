@@ -1,9 +1,14 @@
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/index.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
 import 'add_friend_model.dart';
 export 'add_friend_model.dart';
 
@@ -29,6 +34,7 @@ class _AddFriendWidgetState extends State<AddFriendWidget> {
     super.initState();
     _model = createModel(context, () => AddFriendModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'addFriend'});
     _model.textController ??= TextEditingController();
     _model.textFieldFocusNode ??= FocusNode();
 
@@ -69,6 +75,8 @@ class _AddFriendWidgetState extends State<AddFriendWidget> {
                   size: 24.0,
                 ),
                 onPressed: () async {
+                  logFirebaseEvent('ADD_FRIEND_arrow_back_rounded_ICN_ON_TAP');
+                  logFirebaseEvent('IconButton_navigate_back');
                   context.safePop();
                 },
               ),
@@ -141,7 +149,7 @@ class _AddFriendWidgetState extends State<AddFriendWidget> {
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 16.0, 0.0, 16.0, 32.0),
                             child: Text(
-                              'Enter your friend\'s phone number to send them a friend request',
+                              'Enter your friend\'s code to send them a friend request or send your code to them!',
                               textAlign: TextAlign.center,
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
@@ -182,7 +190,7 @@ class _AddFriendWidgetState extends State<AddFriendWidget> {
                                       padding: EdgeInsetsDirectional.fromSTEB(
                                           0.0, 0.0, 0.0, 8.0),
                                       child: Text(
-                                        'Phone Number',
+                                        'Friend Code',
                                         style: FlutterFlowTheme.of(context)
                                             .bodyMedium
                                             .override(
@@ -211,7 +219,8 @@ class _AddFriendWidgetState extends State<AddFriendWidget> {
                                         textInputAction: TextInputAction.done,
                                         obscureText: false,
                                         decoration: InputDecoration(
-                                          hintText: '+1 (555) 123-4567',
+                                          hintText:
+                                              'Enter friend code here to add a friend',
                                           hintStyle: FlutterFlowTheme.of(
                                                   context)
                                               .labelMedium
@@ -231,7 +240,7 @@ class _AddFriendWidgetState extends State<AddFriendWidget> {
                                                 color:
                                                     FlutterFlowTheme.of(context)
                                                         .secondaryText,
-                                                fontSize: 16.0,
+                                                fontSize: 14.0,
                                                 letterSpacing: 0.0,
                                                 fontWeight:
                                                     FlutterFlowTheme.of(context)
@@ -291,7 +300,7 @@ class _AddFriendWidgetState extends State<AddFriendWidget> {
                                               EdgeInsetsDirectional.fromSTEB(
                                                   20.0, 18.0, 20.0, 18.0),
                                           prefixIcon: Icon(
-                                            Icons.phone,
+                                            Icons.person_add,
                                             color: FlutterFlowTheme.of(context)
                                                 .secondaryText,
                                             size: 20.0,
@@ -315,7 +324,6 @@ class _AddFriendWidgetState extends State<AddFriendWidget> {
                                                       .bodyMedium
                                                       .fontStyle,
                                             ),
-                                        keyboardType: TextInputType.phone,
                                         cursorColor:
                                             FlutterFlowTheme.of(context)
                                                 .primary,
@@ -327,17 +335,44 @@ class _AddFriendWidgetState extends State<AddFriendWidget> {
                                   ],
                                 ),
                                 FFButtonWidget(
-                                  onPressed: () {
-                                    print('Button pressed ...');
+                                  onPressed: () async {
+                                    logFirebaseEvent(
+                                        'ADD_FRIEND_PAGE_ADD_FRIEND_BTN_ON_TAP');
+                                    logFirebaseEvent('Button_firestore_query');
+                                    _model.friendUser =
+                                        await queryUsersRecordOnce(
+                                      queryBuilder: (usersRecord) =>
+                                          usersRecord.where(
+                                        'FriendCode',
+                                        isEqualTo: _model.textController.text,
+                                      ),
+                                      singleRecord: true,
+                                    ).then((s) => s.firstOrNull);
+                                    logFirebaseEvent('Button_backend_call');
+
+                                    await currentUserReference!.update({
+                                      ...mapToFirestore(
+                                        {
+                                          'friendsList': FieldValue.arrayUnion(
+                                              [_model.friendUser?.reference]),
+                                        },
+                                      ),
+                                    });
+                                    logFirebaseEvent('Button_navigate_to');
+
+                                    context.goNamed(SuccessWidget.routeName);
+
+                                    safeSetState(() {});
                                   },
-                                  text: 'Send Friend Request',
+                                  text: 'Add Friend',
                                   options: FFButtonOptions(
                                     width: double.infinity,
                                     height: 50.0,
                                     padding: EdgeInsets.all(0.0),
                                     iconPadding: EdgeInsetsDirectional.fromSTEB(
                                         0.0, 0.0, 0.0, 0.0),
-                                    color: FlutterFlowTheme.of(context).primary,
+                                    color:
+                                        FlutterFlowTheme.of(context).secondary,
                                     textStyle: FlutterFlowTheme.of(context)
                                         .titleSmall
                                         .override(
@@ -363,6 +398,55 @@ class _AddFriendWidgetState extends State<AddFriendWidget> {
                                       width: 1.0,
                                     ),
                                     borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                ),
+                                Builder(
+                                  builder: (context) => FFButtonWidget(
+                                    onPressed: () async {
+                                      logFirebaseEvent(
+                                          'ADD_FRIEND_SHARE_FRIEND_CODE_BTN_ON_TAP');
+                                      logFirebaseEvent('Button_share');
+                                      await Share.share(
+                                        'Hey add me on Where 2 using my friend code! ${valueOrDefault(currentUserDocument?.friendCode, '')}',
+                                        sharePositionOrigin:
+                                            getWidgetBoundingBox(context),
+                                      );
+                                    },
+                                    text: 'Share Friend Code',
+                                    options: FFButtonOptions(
+                                      width: double.infinity,
+                                      height: 50.0,
+                                      padding: EdgeInsets.all(0.0),
+                                      iconPadding:
+                                          EdgeInsetsDirectional.fromSTEB(
+                                              0.0, 0.0, 0.0, 0.0),
+                                      color: Color(0xD1FDAB3B),
+                                      textStyle: FlutterFlowTheme.of(context)
+                                          .titleSmall
+                                          .override(
+                                            font: GoogleFonts.interTight(
+                                              fontWeight: FontWeight.w500,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleSmall
+                                                      .fontStyle,
+                                            ),
+                                            color: Colors.white,
+                                            fontSize: 16.0,
+                                            letterSpacing: 0.0,
+                                            fontWeight: FontWeight.w500,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleSmall
+                                                    .fontStyle,
+                                          ),
+                                      elevation: 0.0,
+                                      borderSide: BorderSide(
+                                        color: Colors.transparent,
+                                        width: 1.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
                                   ),
                                 ),
                               ].divide(SizedBox(height: 24.0)),

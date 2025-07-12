@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Here Now</string>
+	<string>Where 2</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Here Now</string>
+	<string>Where 2</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 
@@ -37,10 +37,10 @@
         <key>CFBundleTypeRole</key>
         <string>Editor</string>
         <key>CFBundleURLName</key>
-        <string>herenow.com</string>
+        <string>where2.com</string>
         <key>CFBundleURLSchemes</key>
         <array>
-        <string>herenow</string>
+        <string>where2</string>
         </array>
         </dict>
     </array>
@@ -63,6 +63,17 @@
     <string>Please allow Where To to use you location. This is necessary for app to work properly</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>Please allow Where To to use you location in background. This is necessary for app to work properly</string>
+	<key>NSMotionUsageDescription</key>
+    <string>The app needs your access to motion in order for the guide to match to function correctly.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>e use your location to guide you to matches and venues</string>
+	<key>PermissionGroupNotification</key>
+    <string>Allow Notifications to get pinged when you and someone match!</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>fetch</string>
+        <string>remote-notification</string>
+    </array>
 
     <key>LSApplicationQueriesSchemes</key>
     <array>

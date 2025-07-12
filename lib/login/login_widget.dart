@@ -36,6 +36,7 @@ class _LoginWidgetState extends State<LoginWidget>
     super.initState();
     _model = createModel(context, () => LoginModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'login'});
     _model.tabBarController = TabController(
       vsync: this,
       length: 2,
@@ -159,27 +160,15 @@ class _LoginWidgetState extends State<LoginWidget>
                     decoration: BoxDecoration(),
                     child: Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 32.0, 0.0, 16.0),
-                      child: Text(
-                        'Where To',
-                        style:
-                            FlutterFlowTheme.of(context).displaySmall.override(
-                                  font: GoogleFonts.interTight(
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .displaySmall
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .displaySmall
-                                        .fontStyle,
-                                  ),
-                                  letterSpacing: 0.0,
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .displaySmall
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .displaySmall
-                                      .fontStyle,
-                                ),
+                          EdgeInsetsDirectional.fromSTEB(25.0, 0.0, 25.0, 0.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.asset(
+                          'assets/images/WHERE_2_longer_image_transparentCentered.png',
+                          width: double.infinity,
+                          height: 200.0,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
@@ -814,6 +803,10 @@ class _LoginWidgetState extends State<LoginWidget>
                                                                 0.0, 16.0),
                                                     child: FFButtonWidget(
                                                       onPressed: () async {
+                                                        logFirebaseEvent(
+                                                            'LOGIN_PAGE_GET_STARTED_BTN_ON_TAP');
+                                                        logFirebaseEvent(
+                                                            'Button_auth');
                                                         GoRouter.of(context)
                                                             .prepareAuthEvent();
                                                         if (_model
@@ -858,6 +851,9 @@ class _LoginWidgetState extends State<LoginWidget>
                                                                   .emailAddressCreateTextController
                                                                   .text,
                                                             ));
+
+                                                        logFirebaseEvent(
+                                                            'Button_navigate_to');
 
                                                         context.pushNamedAuth(
                                                             SocialVibesWidget
@@ -1022,6 +1018,10 @@ class _LoginWidgetState extends State<LoginWidget>
                                                                   FFButtonWidget(
                                                                 onPressed:
                                                                     () async {
+                                                                  logFirebaseEvent(
+                                                                      'LOGIN_CONTINUE_WITH_GOOGLE_BTN_ON_TAP');
+                                                                  logFirebaseEvent(
+                                                                      'Button_auth');
                                                                   GoRouter.of(
                                                                           context)
                                                                       .prepareAuthEvent();
@@ -1118,6 +1118,10 @@ class _LoginWidgetState extends State<LoginWidget>
                                                                         FFButtonWidget(
                                                                       onPressed:
                                                                           () async {
+                                                                        logFirebaseEvent(
+                                                                            'LOGIN_CONTINUE_WITH_APPLE_BTN_ON_TAP');
+                                                                        logFirebaseEvent(
+                                                                            'Button_auth');
                                                                         GoRouter.of(context)
                                                                             .prepareAuthEvent();
                                                                         final user =
@@ -1639,6 +1643,10 @@ class _LoginWidgetState extends State<LoginWidget>
                                                                 0.0, 16.0),
                                                     child: FFButtonWidget(
                                                       onPressed: () async {
+                                                        logFirebaseEvent(
+                                                            'LOGIN_PAGE_SIGN_IN_BTN_ON_TAP');
+                                                        logFirebaseEvent(
+                                                            'Button_auth');
                                                         GoRouter.of(context)
                                                             .prepareAuthEvent();
 
@@ -1799,6 +1807,10 @@ class _LoginWidgetState extends State<LoginWidget>
                                                                     16.0),
                                                         child: FFButtonWidget(
                                                           onPressed: () async {
+                                                            logFirebaseEvent(
+                                                                'LOGIN_CONTINUE_WITH_GOOGLE_BTN_ON_TAP');
+                                                            logFirebaseEvent(
+                                                                'Button_auth');
                                                             GoRouter.of(context)
                                                                 .prepareAuthEvent();
                                                             final user =
@@ -1899,6 +1911,10 @@ class _LoginWidgetState extends State<LoginWidget>
                                                                   FFButtonWidget(
                                                                 onPressed:
                                                                     () async {
+                                                                  logFirebaseEvent(
+                                                                      'LOGIN_CONTINUE_WITH_APPLE_BTN_ON_TAP');
+                                                                  logFirebaseEvent(
+                                                                      'Button_auth');
                                                                   GoRouter.of(
                                                                           context)
                                                                       .prepareAuthEvent();
@@ -1996,6 +2012,11 @@ class _LoginWidgetState extends State<LoginWidget>
                                                                 0.0, 16.0),
                                                     child: FFButtonWidget(
                                                       onPressed: () async {
+                                                        logFirebaseEvent(
+                                                            'LOGIN_PAGE_FORGOT_PASSWORD_BTN_ON_TAP');
+                                                        logFirebaseEvent(
+                                                            'Button_navigate_to');
+
                                                         context.pushNamed(
                                                             ForgotPasswordWidget
                                                                 .routeName);

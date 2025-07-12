@@ -41,6 +41,7 @@ class _SocialVibesWidgetState extends State<SocialVibesWidget> {
     super.initState();
     _model = createModel(context, () => SocialVibesModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'SocialVibes'});
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -313,6 +314,10 @@ class _SocialVibesWidgetState extends State<SocialVibesWidget> {
                       ),
                       FFButtonWidget(
                         onPressed: () async {
+                          logFirebaseEvent(
+                              'SOCIAL_VIBES_SAVE_MY_VIBES_BTN_ON_TAP');
+                          logFirebaseEvent('Button_backend_call');
+
                           await currentUserReference!.update({
                             ...mapToFirestore(
                               {
@@ -320,6 +325,7 @@ class _SocialVibesWidgetState extends State<SocialVibesWidget> {
                               },
                             ),
                           });
+                          logFirebaseEvent('Button_navigate_to');
 
                           context.pushNamed(InterestSelectionWidget.routeName);
                         },
