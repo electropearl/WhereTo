@@ -774,6 +774,27 @@ class _HomeWidgetState extends State<HomeWidget> {
                                           safeSetState(() {});
                                         },
                                       ),
+                                    if (currentUserUid ==
+                                        'SRWmrlj7rSVQ11mWtxY0dCrSzlJ2')
+                                      FlutterFlowIconButton(
+                                        borderRadius: 20.0,
+                                        buttonSize: 40.0,
+                                        fillColor: FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
+                                        icon: Icon(
+                                          Icons.store,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          size: 20.0,
+                                        ),
+                                        onPressed: () async {
+                                          logFirebaseEvent(
+                                              'HOME_PAGE_store_ICN_ON_TAP');
+                                          logFirebaseEvent(
+                                              'IconButton_custom_action');
+                                          await actions.initializeVenueData();
+                                        },
+                                      ),
                                   ].divide(SizedBox(width: 12.0)),
                                 ),
                               ],

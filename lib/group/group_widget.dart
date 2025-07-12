@@ -1,4 +1,5 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/ai_agents/ai_agent.dart';
 import '/backend/backend.dart';
 import '/components/group_info_help_widget.dart';
 import '/components/invite_friend_widget.dart';
@@ -6,6 +7,7 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/flutter_flow/random_data_util.dart' as random_data;
 import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -388,61 +390,197 @@ class _GroupWidgetState extends State<GroupWidget> {
                                         },
                                       ),
                                     ),
-                                  Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        16.0, 25.0, 16.0, 0.0),
-                                    child: Container(
-                                      width: double.infinity,
-                                      height: 40.0,
-                                      decoration: BoxDecoration(
-                                        color: FlutterFlowTheme.of(context)
-                                            .primaryBackground,
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.bolt,
-                                            color: FlutterFlowTheme.of(context)
-                                                .info,
-                                            size: 20.0,
-                                          ),
-                                          Text(
-                                            valueOrDefault<String>(
-                                              columnGroupsRecord
-                                                  .dynamicSingleWord,
-                                              'Friends',
+                                  Stack(
+                                    children: [
+                                      if (columnGroupsRecord
+                                                  .dynamicSingleWord !=
+                                              '')
+                                        Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  16.0, 25.0, 16.0, 0.0),
+                                          child: Container(
+                                            width: double.infinity,
+                                            height: 40.0,
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryBackground,
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
                                             ),
-                                            style: FlutterFlowTheme.of(context)
-                                                .titleMedium
-                                                .override(
-                                                  font: GoogleFonts.interTight(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .titleMedium
-                                                            .fontStyle,
-                                                  ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.bolt,
                                                   color: FlutterFlowTheme.of(
                                                           context)
                                                       .info,
-                                                  letterSpacing: 0.0,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .titleMedium
-                                                          .fontStyle,
+                                                  size: 20.0,
                                                 ),
+                                                Text(
+                                                  valueOrDefault<String>(
+                                                    columnGroupsRecord
+                                                        .dynamicSingleWord,
+                                                    'Friends',
+                                                  ),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleMedium
+                                                      .override(
+                                                        font: GoogleFonts
+                                                            .interTight(
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontStyle:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .titleMedium
+                                                                  .fontStyle,
+                                                        ),
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .info,
+                                                        letterSpacing: 0.0,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontStyle:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .titleMedium
+                                                                .fontStyle,
+                                                      ),
+                                                ),
+                                              ].divide(SizedBox(width: 8.0)),
+                                            ),
                                           ),
-                                        ].divide(SizedBox(width: 8.0)),
-                                      ),
-                                    ),
+                                        ),
+                                      if (columnGroupsRecord
+                                                  .dynamicSingleWord ==
+                                              '')
+                                        Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  16.0, 25.0, 16.0, 0.0),
+                                          child: Container(
+                                            width: double.infinity,
+                                            height: 40.0,
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryBackground,
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                            ),
+                                            child: InkWell(
+                                              splashColor: Colors.transparent,
+                                              focusColor: Colors.transparent,
+                                              hoverColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              onTap: () async {
+                                                logFirebaseEvent(
+                                                    'GROUP_PAGE_Row_pvtiv6yr_ON_TAP');
+                                                logFirebaseEvent(
+                                                    'Row_a_i_agent');
+                                                await callAiAgent(
+                                                  context: context,
+                                                  prompt:
+                                                      'please look at my current group and its current members and give us a group dynamic and give each of us a friend type label based on our interest and vibs preference',
+                                                  imageUrl: currentUserPhoto,
+                                                  threadId:
+                                                      random_data.randomString(
+                                                    6,
+                                                    6,
+                                                    false,
+                                                    true,
+                                                    true,
+                                                  ),
+                                                  agentCloudFunctionName:
+                                                      'hypeBot',
+                                                  provider: 'OPENAI',
+                                                  agentJson: null,
+                                                  responseType: 'JSON',
+                                                ).then((generatedText) {
+                                                  safeSetState(() =>
+                                                      _model.getgroupdynamic =
+                                                          generatedText);
+                                                });
+
+                                                logFirebaseEvent(
+                                                    'Row_backend_call');
+
+                                                await widget.groupDetails!
+                                                    .update(
+                                                        createGroupsRecordData(
+                                                  dynamicSingleWord:
+                                                      valueOrDefault<String>(
+                                                    getJsonField(
+                                                      _model.getgroupdynamic,
+                                                      r'''$.DynamicSingleWord''',
+                                                    )?.toString(),
+                                                    'Besties',
+                                                  ),
+                                                ));
+                                                logFirebaseEvent(
+                                                    'Row_update_app_state');
+                                                FFAppState().showFullList =
+                                                    false;
+                                                safeSetState(() {});
+
+                                                safeSetState(() {});
+                                              },
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    Icons.bolt,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .info,
+                                                    size: 20.0,
+                                                  ),
+                                                  Text(
+                                                    'Click Here For Group Dynamic',
+                                                    style: FlutterFlowTheme.of(
+                                                            context)
+                                                        .titleMedium
+                                                        .override(
+                                                          font: GoogleFonts
+                                                              .interTight(
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            fontStyle:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleMedium
+                                                                    .fontStyle,
+                                                          ),
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .info,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontStyle:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .titleMedium
+                                                                  .fontStyle,
+                                                        ),
+                                                  ),
+                                                ].divide(SizedBox(width: 8.0)),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ].divide(SizedBox(height: 8.0)),
                               ),

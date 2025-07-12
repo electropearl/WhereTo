@@ -7,3 +7,4 @@ export 'update_venue_presence_action.dart' show updateVenuePresenceAction;
 export 'start_background_location_services.dart'
     show startBackgroundLocationServices;
 export 'start_and_track_venue_presence.dart' show startAndTrackVenuePresence;
+export 'initialize_venue_data.dart' show initializeVenueData;

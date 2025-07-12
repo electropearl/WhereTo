@@ -1,7 +1,6 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/components/no_events_widget.dart';
-import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -10,7 +9,6 @@ import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'venue_model.dart';
 export 'venue_model.dart';
@@ -38,13 +36,10 @@ class VenueWidget extends StatefulWidget {
   State<VenueWidget> createState() => _VenueWidgetState();
 }
 
-class _VenueWidgetState extends State<VenueWidget>
-    with TickerProviderStateMixin {
+class _VenueWidgetState extends State<VenueWidget> {
   late VenueModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
-
-  final animationsMap = <String, AnimationInfo>{};
 
   @override
   void initState() {
@@ -52,54 +47,6 @@ class _VenueWidgetState extends State<VenueWidget>
     _model = createModel(context, () => VenueModel());
 
     logFirebaseEvent('screen_view', parameters: {'screen_name': 'venue'});
-    animationsMap.addAll({
-      'stackOnActionTriggerAnimation': AnimationInfo(
-        trigger: AnimationTrigger.onActionTrigger,
-        applyInitialState: true,
-        effectsBuilder: () => [
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-        ],
-      ),
-      'buttonOnActionTriggerAnimation1': AnimationInfo(
-        trigger: AnimationTrigger.onActionTrigger,
-        applyInitialState: true,
-        effectsBuilder: () => [
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-        ],
-      ),
-      'buttonOnActionTriggerAnimation2': AnimationInfo(
-        trigger: AnimationTrigger.onActionTrigger,
-        applyInitialState: true,
-        effectsBuilder: () => [
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-        ],
-      ),
-    });
-    setupAnimations(
-      animationsMap.values.where((anim) =>
-          anim.trigger == AnimationTrigger.onActionTrigger ||
-          !anim.applyInitialState),
-      this,
-    );
-
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -611,9 +558,6 @@ class _VenueWidgetState extends State<VenueWidget>
                                                                     .circular(
                                                                         8.0),
                                                           ),
-                                                        ).animateOnActionTrigger(
-                                                          animationsMap[
-                                                              'buttonOnActionTriggerAnimation1']!,
                                                         ),
                                                       ),
                                                     if ((currentUserDocument
@@ -750,15 +694,9 @@ class _VenueWidgetState extends State<VenueWidget>
                                                                     .circular(
                                                                         8.0),
                                                           ),
-                                                        ).animateOnActionTrigger(
-                                                          animationsMap[
-                                                              'buttonOnActionTriggerAnimation2']!,
                                                         ),
                                                       ),
                                                   ],
-                                                ).animateOnActionTrigger(
-                                                  animationsMap[
-                                                      'stackOnActionTriggerAnimation']!,
                                                 ),
                                                 if (currentUserDocument
                                                         ?.currentGroup !=
