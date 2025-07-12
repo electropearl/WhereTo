@@ -50,7 +50,14 @@ class _NoEventsWidgetState extends State<NoEventsWidget> {
           child: Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              color: FlutterFlowTheme.of(context).secondaryBackground,
+              gradient: LinearGradient(
+                colors: [
+                  FlutterFlowTheme.of(context).secondaryBackground,
+                  FlutterFlowTheme.of(context).primaryBackground,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(12.0),
             ),
             child: Padding(
